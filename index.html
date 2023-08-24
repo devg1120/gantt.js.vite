@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GanttJS</title>
+  </head>
+  <body>
+
+	<div id="div_top">
+		<div class="div_top_search">
+			<input type="date" id="sToday" value="2018-10-03" /> ~ <input type="date" id="sEnd" value="2019-10-15" />
+			<input type="number" id="sCount" value="100" max="100000" style="width:100px;" />
+			<button type="button" class="btn-header" id="bt_search">Search</button>
+		</div>
+	</div>
+
+	<div id="gantt_here" style="width:100%;height:650px;"></div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+
+
+
+</html>
