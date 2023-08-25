@@ -250,6 +250,9 @@ export default class CubicGantt {
         get open() {
             return this._data.open;
         }
+        get open_animate() {
+            return this._data.open_animate;
+        }
         get parent_id() {
             return this._data.parent;
         }
@@ -278,6 +281,9 @@ export default class CubicGantt {
          if (this.tasks.data[i].end_date != undefined ) {
              this.tasks.data[i].d_end = 
                  format_date(this.tasks.data[i].end_date);
+         }
+         if (this.tasks.data[i].open_animate == undefined ) {
+             this.tasks.data[i].open_animate = false; 
          }
 
 
@@ -396,6 +402,7 @@ export default class CubicGantt {
           index: task.copy_idx,
           open: task.open,
           n_children: 0,
+          open_animate: task.open_animate,
         });
        if (task.open == false ){
           return;
@@ -1398,13 +1405,15 @@ export default class CubicGantt {
 
     //	make left element
     for (let temp_idx = start_idx; temp_idx < end_idx; temp_idx++) {
-      left_menu_vscroll.appendChild(this.draw_left_list(temp_idx));
-      right_content_vscroll.appendChild(this.draw_right_list(temp_idx));
+      left_menu_vscroll.appendChild(this.draw_left_list(temp_idx));           // left pannel
+      right_content_vscroll.appendChild(this.draw_right_list(temp_idx));      // right panel
     }
   }
   draw_left_list(index) {
-    console.log("draw_left_list");
-    console.dir(this.tasks.data);
+    //console.log("draw_left_list");
+    //console.dir(this.visible_order);
+
+    let animate = this.visible_order[index].open_animate;
 
     let that = this;
 
@@ -1416,7 +1425,10 @@ export default class CubicGantt {
       this.tasks.data[this.visible_order[index].index].open != undefined;
     let b_open = this.tasks.data[this.visible_order[index].index].open || false;
     let gantt_row = document.createElement("div");
+    if (this.visible_order[index].show) {}
+    if (this.visible_order[index].hide) {}
 /*
+if (animate) {
     gantt_row.animate(
   [
     { transform: 'translateY(0px)' },
@@ -1429,6 +1441,33 @@ export default class CubicGantt {
     direction: 'alternate',
   }
     );
+}
+*/
+
+/*
+gantt_row.animate(
+  [
+    {
+      opacity: '0', // 透過０
+      offset: 0, // キーフレームの設定
+      easing: 'ease-in-out'
+    },
+    {
+      opacity: '1', // 透過1
+      offset: 0.5,
+      easing: 'ease-in-out'
+    },
+    {
+      opacity: '0', // 透過０
+      offset: 1,
+      easing: 'ease-in-out'
+    }
+  ],
+  {
+    duration: 2000, // アニメーションにかける時間をmsで指定
+    fill: 'forwards',
+  }
+);
 */
     let _w = 0;
     gantt_row.classList.add("gantt_row");
@@ -1474,6 +1513,7 @@ export default class CubicGantt {
 
               gantt_cell_base.addEventListener("click", function () {
                 that.tasks.data[that.visible_order[index].index].open = false;
+                that.tasks.data[that.visible_order[index].index].open_animate = false;      // open animate
                 that.reset_visible(document.getElementById(that.gantt_id));
               });
             } else {
@@ -1482,6 +1522,7 @@ export default class CubicGantt {
 
               gantt_cell_base.addEventListener("click", function () {
                 that.tasks.data[that.visible_order[index].index].open = true;
+                that.tasks.data[that.visible_order[index].index].open_animate = true;      // open animate
                 that.reset_visible(document.getElementById(that.gantt_id));
               });
             }
@@ -1561,6 +1602,7 @@ export default class CubicGantt {
 
               gantt_cell_base.addEventListener("click", function () {
                 that.tasks.data[that.visible_order[index].index].open = false;
+                that.tasks.data[that.visible_order[index].index].open_animate = false;      // open animate
                 that.reset_visible(document.getElementById(that.gantt_id));
               });
             } else {
@@ -1569,6 +1611,7 @@ export default class CubicGantt {
 
               gantt_cell_base.addEventListener("click", function () {
                 that.tasks.data[that.visible_order[index].index].open = true;
+                that.tasks.data[that.visible_order[index].index].open_animate = true;      // open animate
                 that.reset_visible(document.getElementById(that.gantt_id));
               });
             }
