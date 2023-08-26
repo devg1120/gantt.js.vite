@@ -458,6 +458,72 @@ export default class CubicGantt {
 
   }
 
+  v_split() {
+
+function date_str (id) {
+
+ var y = id.getFullYear().toString();
+ var m = (id.getMonth()+1).toString().padStart(2, '0');
+ var d = id.getDate().toString().padStart(2, '0');
+
+ var fed = y + '-' + m + '-' + d;
+ return fed;
+}
+
+function addday_str( day, a ) {
+ const d2 = new Date(day.getTime())
+ d2.setDate( d2.getDate() + a );
+ return date_str(d2)
+}
+
+function addday( day, a ) {
+ day.setDate( day.getDate() + a );
+}
+
+function byId(id) {
+  return document.getElementById(id);
+}
+
+    let gantt = new CubicGantt();
+/*
+    let today = new Date();
+
+    let from = new Date(date_str(today)).toISOString();
+    let to   = new Date(addday_str(today, 160)).toISOString();
+    let count = 100;
+
+    let from_s = date_str(new Date(from));
+    let to_s   = date_str(new Date(to));
+
+    byId("sToday").value = from_s;
+    byId("sEnd").value   = to_s;
+    byId("sCount").value = count.toString();
+*/
+    //let gantt = new CubicGantt();
+
+    gantt.tasks = {};
+    //gantt.tasks = generateData3(count, from, to);
+    gantt.tasks = this.tasks;
+    /*
+    from = new Date(from);
+    to = new Date(to);
+    gantt.config.start_date = from;
+    gantt.config.end_date = to;
+
+    gantt.config.left_type = [
+      { title: "Name", width: "350", align: "left", content: "text" },
+      { title: "LV", width: "15", align: "left", content: "level" },                  
+      { title: "Start", width: "90", align: "center", content: "d_start" },
+      { title: "End", width: "90", align: "center", content: "d_end" },
+      { title: "Test", width: "80", align: "right", content: "test" },
+    ];
+    */
+    gantt.config = this.config;
+    gantt.init_gantt("gantt_here2");
+
+
+  }
+
   reset() {
     this.reset_visible(document.getElementById(this.gantt_id));
   }
@@ -646,6 +712,29 @@ export default class CubicGantt {
                         if (that.show_level ==  that.max_level) { return;}
 			that.show_level = that.show_level +1 ;
 			that.reset();
+                  });
+                
+                cell.style.width = bw + "px";
+                gantt_grid_panel.appendChild(cell); //	add button
+
+                cell = document.createElement("div");
+                cell.classList.add("gantt_menu_button");
+                cell.classList.add("gantt_menu_v_split");
+                cell.style.float = "left";
+                cell.style.marginLeft = "5px";
+                cell.addEventListener("click", function () {
+			that.v_split();
+                  });
+                
+                cell.style.width = bw + "px";
+                gantt_grid_panel.appendChild(cell); //	add button
+
+                cell = document.createElement("div");
+                cell.classList.add("gantt_menu_button");
+                cell.classList.add("gantt_menu_h_split");
+                cell.style.float = "left";
+                cell.style.marginLeft = "5px";
+                cell.addEventListener("click", function () {
                   });
                 
                 cell.style.width = bw + "px";

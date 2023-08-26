@@ -209,6 +209,17 @@
   background-image: url("png/level_right.png");
 }
 
+.gantt_menu_v_split {
+  width: 100%;
+  height: 100%;
+  background-image: url("png/gantt_v_split.png");
+}
+
+.gantt_menu_h_split {
+  width: 100%;
+  height: 100%;
+  background-image: url("png/gantt_h_split.png");
+}
 .gantt_menu_button {
   background-position: 50%;
   background-repeat: no-repeat;

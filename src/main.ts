@@ -295,6 +295,8 @@ document.addEventListener("DOMContentLoaded", function () {
     //gantt.tasks = generateData3(count, from, to);
     gantt.tasks = generateData3(count, from, to);
 
+
+
     //console.dir(gantt.tasks);
 
 
