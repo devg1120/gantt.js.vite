@@ -307,6 +307,7 @@ document.addEventListener("DOMContentLoaded", function () {
     //gantt.config.use_add = false;
     gantt.config.left_type = [
       { title: "Name", width: "350", align: "left", content: "text" },
+      { title: "LV", width: "15", align: "left", content: "level" },                  /*GS*/
       { title: "Start", width: "90", align: "center", content: "d_start" },
       { title: "End", width: "90", align: "center", content: "d_end" },
       { title: "Test", width: "80", align: "right", content: "test" },

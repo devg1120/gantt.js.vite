@@ -29,8 +29,6 @@ export default class CubicGantt {
     this.visible_order = [];
 
     this.tasks = {};
-    this.max_level = -1;
-    this.show_level = -1;
 
     this.total_height = 0; //	
     this.total_width = 0; //
@@ -231,7 +229,6 @@ export default class CubicGantt {
   }
 
   sort_visible3() {
-    let that = this;
 
     var task = class {
         constructor(data, copy_index) {
@@ -352,16 +349,12 @@ export default class CubicGantt {
     return [year, month, day].join("-");
   }
 
-    function task_dfs(task , data , level) {
-       level = level+1;
-       //if (level > max) { max = level; }
-       if (level > that.max_level) { that.max_level = level; }
-
+    function task_dfs(task , data ) {
        let min_start_date = null;
        let max_end_date   = null;
 
        for (let i = 0; i < task.children.length; ++i) {
-         let r = task_dfs(task.children[i] , data , level );
+         let r = task_dfs(task.children[i] , data );
 
          if ( min_start_date == null) {
                min_start_date = new Date(r[0]);
@@ -396,21 +389,13 @@ export default class CubicGantt {
 
    for (let i = 0; i < top_level.length; ++i) {
        let task = top_level[i];
-       let r = task_dfs(task , this.tasks.data , -1 );
+       let r = task_dfs(task , this.tasks.data );
     };
-    if( this.show_level == -1) {
-        this.show_level = this.max_level;
-    }
 
-    //console.log("max level:",  this.max_level);
-    //that.show_level = 3;    
+
    //-------------------------------------------
-    function task_walk(task,  visible_order , level) {
-        level = level + 1;
-	//console.log("show_level:", that.show_level);
-	if (level > that.show_level) {
-		return;
-	}
+    function task_walk(task,  visible_order ) {
+
         visible_order.push({
           n_id: task.id,
           parent: 0,
@@ -423,14 +408,14 @@ export default class CubicGantt {
           return;
        }
        for (let i = 0; i < task.children.length; ++i) {
-         task_walk(task.children[i],  visible_order , level);
+         task_walk(task.children[i],  visible_order );
        }
    }
 
    this.visible_order = [];
    for (let i = 0; i < top_level.length; ++i) {
        let task = top_level[i];
-       task_walk(task,  this.visible_order , -1);
+       task_walk(task,  this.visible_order );
     };
 
 
@@ -456,10 +441,6 @@ export default class CubicGantt {
     this.draw_task(0, this.list_length);
     //this.reset_visible(document.getElementById(this.gantt_id));
 
-  }
-
-  reset() {
-    this.reset_visible(document.getElementById(this.gantt_id));
   }
 
   reset_visible(obj_gantt) {
@@ -601,58 +582,6 @@ export default class CubicGantt {
     gantt_grid.style.height = "inherit";
     gantt_grid.style.width = "inherit";
 
-    let gantt_grid_panel = document.createElement("div");   /*GS*/
-    gantt_grid_panel.classList.add("gantt_grid_panel");
-    gantt_grid_panel.style.width = "inherit";
-    gantt_grid_panel.style.height = "22px";
-    //gantt_grid_panel.style.innerHTML = "TEST";
-           // append contol button
-    
-	    
-                //	button element
-   	        let bw = 20; //but 
-                let cell = document.createElement("div");
-                cell.classList.add("gantt_grid_head_add");
-                cell.style.float = "left";
-                //cell.style.paddingLeft = "5px";
-                cell.style.marginLeft = "5px";
-                cell.addEventListener("click", function () {
-			 alert("B1");
-                  });
-                
-                cell.style.width = bw + "px";
-                gantt_grid_panel.appendChild(cell); //	add button
-
-                cell = document.createElement("div");
-                cell.classList.add("gantt_menu_button");
-                cell.classList.add("gantt_menu_level_left");
-                cell.style.float = "left";
-                cell.style.marginLeft = "5px";
-                cell.addEventListener("click", function () {
-                        if (that.show_level == 0) { return;}
-			that.show_level = that.show_level -1 ;
-			that.reset();
-                  });
-                
-                cell.style.width = bw + "px";
-                gantt_grid_panel.appendChild(cell); //	add button
-
-                cell = document.createElement("div");
-                cell.classList.add("gantt_menu_button");
-                cell.classList.add("gantt_menu_level_right");
-                cell.style.float = "left";
-                cell.style.marginLeft = "5px";
-                cell.addEventListener("click", function () {
-                        if (that.show_level ==  that.max_level) { return;}
-			that.show_level = that.show_level +1 ;
-			that.reset();
-                  });
-                
-                cell.style.width = bw + "px";
-                gantt_grid_panel.appendChild(cell); //	add button
-
-
-
     let gantt_grid_scale = document.createElement("div");
     gantt_grid_scale.classList.add("gantt_grid_scale");
     gantt_grid_scale.style.width = "inherit";
@@ -671,8 +600,6 @@ export default class CubicGantt {
     gantt_grid_data.appendChild(hidden_height);
 
     gantt_grid.appendChild(gantt_grid_scale);
-    gantt_grid_scale.appendChild(gantt_grid_panel);    /*GS*/
-
     gantt_grid.appendChild(gantt_grid_data);
     gantt_layout_content.appendChild(gantt_grid);
     div_left_menu.appendChild(gantt_layout_content);
@@ -1285,7 +1212,6 @@ export default class CubicGantt {
     cell.style.width = 50 + "px";
 
     obj_menu.appendChild(cell); //	add button
-
   }
   draw_date(obj_gantt) {
     //const format_month = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
