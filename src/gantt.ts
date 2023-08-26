@@ -704,6 +704,26 @@ function byId(id) {
                 gantt_grid_panel.appendChild(cell); //	add button
 
                 cell = document.createElement("div");
+                //cell.classList.add("gantt_menu_button");
+                //cell.classList.add("gantt_menu_level");
+		cell.innerHTML = that.show_level;
+		//cell.textContent = that.show_level;
+
+                cell.style.float = "left";
+                cell.style.marginTop = "-20px";
+                cell.style.marginLeft = "5px";
+		cell.style.textAlign = "center";
+		cell.style.verticalAlign = "top";
+
+                
+                cell.style.width = bw + "px";
+                gantt_grid_panel.appendChild(cell); //	add button
+
+
+
+
+
+                cell = document.createElement("div");
                 cell.classList.add("gantt_menu_button");
                 cell.classList.add("gantt_menu_level_right");
                 cell.style.float = "left";
