@@ -57,6 +57,9 @@ export default class CubicGantt {
 
     this.last_vscroll_position = 0;
     this.last_hscroll_position = 0;
+
+    this.gantt_left_edit = false;  /* GS */
+    this.gantt_code_editer = null;
   }
   init_gantt(gantt_id) {
     if (document.getElementById("divRTMCContent")) {
@@ -518,6 +521,9 @@ function byId(id) {
       { title: "Test", width: "80", align: "right", content: "test" },
     ];
     */
+    let gantt2_element = byId("gantt_here2");
+    gantt2_element.style.height = "650px";
+
     gantt.config = this.config;
     gantt.init_gantt("gantt_here2");
 
@@ -677,6 +683,7 @@ function byId(id) {
 	    
                 //	button element
    	        let bw = 20; //but 
+/*
                 let cell = document.createElement("div");
                 cell.classList.add("gantt_grid_head_add");
                 cell.style.float = "left";
@@ -685,15 +692,18 @@ function byId(id) {
                 cell.addEventListener("click", function () {
 			 alert("B1");
                   });
-                
+             
                 cell.style.width = bw + "px";
                 gantt_grid_panel.appendChild(cell); //	add button
 
+*/
+                let cell = null;
+		//----------------------------------------------------
                 cell = document.createElement("div");
                 cell.classList.add("gantt_menu_button");
                 cell.classList.add("gantt_menu_level_left");
                 cell.style.float = "left";
-                cell.style.marginLeft = "5px";
+                cell.style.marginLeft = "8px";
                 cell.addEventListener("click", function () {
                         if (that.show_level == 0) { return;}
 			that.show_level = that.show_level -1 ;
@@ -703,6 +713,7 @@ function byId(id) {
                 cell.style.width = bw + "px";
                 gantt_grid_panel.appendChild(cell); //	add button
 
+		//----------------------------------------------------
                 cell = document.createElement("div");
                 //cell.classList.add("gantt_menu_button");
                 //cell.classList.add("gantt_menu_level");
@@ -723,6 +734,7 @@ function byId(id) {
 
 
 
+		//----------------------------------------------------
                 cell = document.createElement("div");
                 cell.classList.add("gantt_menu_button");
                 cell.classList.add("gantt_menu_level_right");
@@ -737,11 +749,12 @@ function byId(id) {
                 cell.style.width = bw + "px";
                 gantt_grid_panel.appendChild(cell); //	add button
 
+		//----------------------------------------------------
                 cell = document.createElement("div");
                 cell.classList.add("gantt_menu_button");
                 cell.classList.add("gantt_menu_v_split");
-                cell.style.float = "left";
-                cell.style.marginLeft = "5px";
+                cell.style.float = "right";
+                cell.style.marginRight = "8px";
                 cell.addEventListener("click", function () {
 			that.v_split();
                   });
@@ -749,17 +762,76 @@ function byId(id) {
                 cell.style.width = bw + "px";
                 gantt_grid_panel.appendChild(cell); //	add button
 
+		//----------------------------------------------------
                 cell = document.createElement("div");
                 cell.classList.add("gantt_menu_button");
                 cell.classList.add("gantt_menu_h_split");
-                cell.style.float = "left";
-                cell.style.marginLeft = "5px";
+                cell.style.float = "right";
+                cell.style.marginRight = "5px";
                 cell.addEventListener("click", function () {
                   });
                 
                 cell.style.width = bw + "px";
                 gantt_grid_panel.appendChild(cell); //	add button
 
+		//----------------------------------------------------
+                cell = document.createElement("div");
+                cell.classList.add("gantt_menu_button");
+                cell.classList.add("gantt_menu_edit");
+                cell.style.float = "right";
+                cell.style.marginRight = "5px";
+                cell.addEventListener("click", function () {
+			console.log("edit button click");
+                           if (that.gantt_left_edit ) {
+                                  that.gantt_left_edit = false;
+
+			   } else {
+                                  that.gantt_left_edit = true;
+
+			   }
+			   that.reset();
+                  });
+                
+                cell.style.width = bw + "px";
+                gantt_grid_panel.appendChild(cell); //	add button
+		//----------------------------------------------------
+                cell = document.createElement("div");
+                cell.classList.add("gantt_menu_button");
+                cell.classList.add("gantt_menu_code");
+                cell.style.float = "right";
+                cell.style.marginRight = "5px";
+                cell.addEventListener("click", function () {
+   			if  (that.gantt_code_editor == null) {
+                                let obj_ = document.getElementById("gantt_face");
+				console.log(obj_);
+                                let main_content = document.createElement("div");
+                                main_content.id = "editor";
+                                main_content.style.height = "300px";
+                                obj_.appendChild(main_content);
+
+   			         that.gantt_code_editor = ace.edit("editor");
+                        } else {
+				console.log("editor destroy");
+   			         that.gantt_code_editor.container.remove();
+   			         that.gantt_code_editor.destroy() ;
+   			         that.gantt_code_editor = null;
+			}
+			   /*
+                           if (that.gant_left_edit ) {
+                                  that.gant_left_edit = false;
+   			          ace.edit("editor");
+
+
+			   } else {
+                                  that.gant_left_edit = true;
+
+			   }
+			   that.reset();
+			   */
+                  });
+                
+                cell.style.width = bw + "px";
+                gantt_grid_panel.appendChild(cell); //	add button
 
 
     let gantt_grid_scale = document.createElement("div");
@@ -1740,7 +1812,9 @@ gantt_row.animate(
         } else {
           format_str =  arr_independent[n].title;
         }
-        cell_inner_text = document.createTextNode(format_str);
+        //cell_inner_text = document.createTextNode(format_str);
+        cell_inner_text = document.createElement("input");
+        cell_inner_text.value = format_str;
         cell_inner.appendChild(cell_inner_text);
         cell.appendChild(cell_inner);
 
@@ -1837,9 +1911,19 @@ gantt_row.animate(
               this.config.left_type[n].content
             ];
         }
-        cell_inner_text = document.createTextNode(format_str);
-        cell_inner.appendChild(cell_inner_text);
-        cell.appendChild(cell_inner);
+        if (this.gantt_left_edit) {   /* GS */
+             //cell_inner_text = document.createTextNode(format_str);
+             cell_inner_text = document.createElement("input");
+             cell_inner_text.value = format_str;
+             cell_inner.appendChild(cell_inner_text);
+             cell.appendChild(cell_inner);
+	} else {
+             cell_inner_text = document.createTextNode(format_str);
+             cell_inner.appendChild(cell_inner_text);
+             cell.appendChild(cell_inner);
+
+
+	}
 
         gantt_row.appendChild(cell);
       }
@@ -1949,6 +2033,7 @@ gantt_row.animate(
   draw_right_list(index) {
     let that = this;
     let gantt_row = document.createElement("div");
+    //let gantt_row = document.createElement("input");
     let b_main =
       this.tasks.data[this.visible_order[index].index].open != undefined;
     if (
@@ -2055,6 +2140,7 @@ gantt_row.animate(
       gantt_row.appendChild(darg);
     }
 
+    
     content = document.createElement("div");
     content.classList.add("gantt_task_content");
     if (
@@ -2065,6 +2151,14 @@ gantt_row.animate(
     }
     content.innerHTML = this.tasks.data[this.visible_order[index].index].text;
     gantt_row.appendChild(content);
+
+    /*
+    content = document.createElement("input");
+    content.classList.add("gantt_task_content");
+    content.style.color = "#000000";
+    content.value = this.tasks.data[this.visible_order[index].index].text;
+    gantt_row.appendChild(content);
+    */
 
     if (!b_main) {
       task_left = document.createElement("div");
