@@ -60,6 +60,7 @@ export default class CubicGantt {
 
     this.gantt_left_edit = false;  /* GS */
     this.gantt_code_editer = null;
+    this.gantt_code = "ABCDEFGHI";
   }
   init_gantt(gantt_id) {
     if (document.getElementById("divRTMCContent")) {
@@ -231,6 +232,119 @@ export default class CubicGantt {
         });
     }
    }
+  }
+
+  dump() {
+    let that = this;
+
+    var task = class {
+        constructor(data, copy_index) {
+            this._data = data;
+            this._copy_index = copy_index;
+            this._children = [];
+          
+            
+        }
+        get id() {
+            return this._data.n_id;
+        }
+        get data() {
+            return this._data;
+        }
+        get copy_idx() {
+            return this._copy_index;
+        }
+        get open() {
+            return this._data.open;
+        }
+        get open_animate() {
+            return this._data.open_animate;
+        }
+        get parent_id() {
+            return this._data.parent;
+        }
+        get parent() {
+            return this._parent;
+        }
+        set parent(p) {
+            this._parent = p;
+        }
+        get children() {
+            return this._children;
+        }
+        set children(c_array) {
+            this._children = c_array;
+        }
+        addchild(c) {
+            this._children.push(c);
+        }
+    }
+
+    let copy_data = JSON.parse(JSON.stringify(this.tasks.data)); //	참조없이 복사
+    let copy_length = copy_data.length;
+    //this.visible_order = [];
+
+    let t = 0;
+
+    let task_dict = {};
+    let top_level = [];
+    let parent = null;
+
+    for (let i = 0; i < copy_data.length; ++i) {
+          let data = copy_data[i];
+          let new_task = new task(data, i);
+          task_dict[data.n_id] = new_task;
+          if (data.level == 0) {
+               top_level.push(new_task);
+          }
+    }
+
+    for ( let key in task_dict) {
+      let child_task = task_dict[key];
+      if (child_task.parent_id != undefined ) {
+           let parent_task = task_dict[child_task.parent_id];
+           parent_task.addchild( child_task );
+ 
+      }
+    };
+
+   //-------------------------------------------
+    function indent( level ) {
+       let str = "";
+       for (let i = 0 ; i<= level ; i++) {
+             str += "   ";
+       }
+       return str;
+    }
+
+    function task_walk(task,  level) {
+        console.log("task_walk");
+        level = level + 1;
+	//console.log(task.data)
+	//let level_ = task.data.level;
+        //gantt_code += indent(level_);
+        let _code = indent(level);
+	_code += task.data.n_id;
+	_code +=  " ";
+	_code += task.data.text;
+	_code +=  "\n";
+        //console.log(gantt_code);
+       for (let i = 0; i < task.children.length; ++i) {
+         let code_nest = task_walk(task.children[i],   level);
+	 _code += code_nest;
+       }
+       return _code;
+   }
+   this.gantt_code = "";
+
+   for (let i = 0; i < top_level.length; ++i) {
+       let task = top_level[i];
+       let _code = task_walk(task,   -1);
+       this.gantt_code += _code;
+    };
+
+     //return "ABC\nDEF\nGHI\nJKL\n";
+    return this.gantt_code;
   }
 
   sort_visible3() {
@@ -781,7 +895,7 @@ function byId(id) {
                 cell.style.float = "right";
                 cell.style.marginRight = "5px";
                 cell.addEventListener("click", function () {
-			console.log("edit button click");
+			//console.log("edit button click");
                            if (that.gantt_left_edit ) {
                                   that.gantt_left_edit = false;
 
@@ -801,17 +915,18 @@ function byId(id) {
                 cell.style.float = "right";
                 cell.style.marginRight = "5px";
                 cell.addEventListener("click", function () {
+			let code = that.dump();
    			if  (that.gantt_code_editor == null) {
                                 let obj_ = document.getElementById("gantt_face");
-				console.log(obj_);
                                 let main_content = document.createElement("div");
                                 main_content.id = "editor";
                                 main_content.style.height = "300px";
                                 obj_.appendChild(main_content);
-
+                                 let session =  ace.createEditSession(code);
    			         that.gantt_code_editor = ace.edit("editor");
+   			         that.gantt_code_editor.setSession(session);
+
                         } else {
-				console.log("editor destroy");
    			         that.gantt_code_editor.container.remove();
    			         that.gantt_code_editor.destroy() ;
    			         that.gantt_code_editor = null;
