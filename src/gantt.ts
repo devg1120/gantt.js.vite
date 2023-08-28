@@ -726,6 +726,42 @@ function byId(id) {
     // bug append
     this.draw_task(0, this.list_length);
 
+
+//------------------------------------  task panel h scroll
+
+const slider = document.querySelector('.right_content_hscroll');
+//console.log(slider);
+let isDown = false;
+let startX;
+let scrollLeft;
+
+slider.addEventListener('mousedown', (e) => {
+  //console.log("gantt hor scroll/ mouse down ");
+  isDown = true;
+  slider.classList.add('active');
+  startX = e.pageX - slider.offsetLeft;
+  scrollLeft = slider.scrollLeft;
+});
+slider.addEventListener('mouseleave', () => {
+  isDown = false;
+  slider.classList.remove('active');
+});
+slider.addEventListener('mouseup', () => {
+  isDown = false;
+  slider.classList.remove('active');
+});
+slider.addEventListener('mousemove', (e) => {
+  if(!isDown) return;
+  e.preventDefault();
+  const x = e.pageX - slider.offsetLeft;
+  const walk = (x - startX) * 3; //scroll-fast
+  slider.scrollLeft = scrollLeft - walk;
+  //console.log(walk);
+});
+
+
+//-------------------------------------
+
     if (this.config.fn_after_reset != null) {
       this.config.fn_after_reset({
         left_width: this.left_width,
@@ -1067,7 +1103,8 @@ function byId(id) {
 
     div_resizer.appendChild(resizer_content);
     div_resizer.addEventListener("mousedown", function (e) {
-      e.preventDefault(); //  drag로 인한 highlight 해제시켜줌.
+      //e.preventDefault(); //  drag로 인한 highlight 해제시켜줌.
+      e.stopPropagation();  /*GS*/
       let resizer_stick = document.createElement("div");
       resizer_stick.classList.add("gantt_resizer_stick");
       resizer_stick.style.height = that.total_height + "px";
@@ -1083,12 +1120,14 @@ function byId(id) {
       that.is_div_resize = true;
     });
     content_wrapper.addEventListener("mousemove", function (event) {
+      event.stopPropagation();  /*GS*/
       if (that.is_div_resize) {
         div_resizer.querySelector(".gantt_resizer_stick").style.left =
           event.clientX - div_resizer.getBoundingClientRect().left + "px";
       }
     });
     content_wrapper.addEventListener("mouseup", function (event) {
+      event.stopPropagation();  /*GS*/
       if (that.is_div_resize) {
         that.is_div_resize = false;
         that.resize_left_width =
@@ -1137,6 +1176,7 @@ function byId(id) {
     let step = this.config.min_column_width;
 
     function onMouseUp(event) {
+      //event.stopPropagation();  /*GS*/
        function format_date(d) {
            let month = "" + (d.getMonth() + 1);
           let  day = "" + d.getDate();
@@ -1296,6 +1336,7 @@ function byId(id) {
     gantt_data_area.addEventListener("mousemove", onMouseMove);
 
     function onMouseMove(event) {
+      //event.stopPropagation();  /*GS*/
       if (that.is_gantt_move) {
         that.target_gantt.style.left =
           event.clientX -
@@ -1413,6 +1454,7 @@ function byId(id) {
 
     main_content.appendChild(content_wrapper);
   }
+
   draw_div_horizontal(obj_gantt) {
     let main_content = obj_gantt.children[0];
 
@@ -2188,6 +2230,7 @@ gantt_row.animate(
     element.addEventListener("mousedown", onMouseDown);
 
     function onMouseDown(event) {
+      //event.stopPropagation();  /*GS*/
       let obj_gantt = document.getElementById(that.gantt_id);
       that.target_gantt = event.target.closest(".gantt_task_line");
 
@@ -2206,6 +2249,7 @@ gantt_row.animate(
           range_left +
           obj_gantt.querySelector(".right_content_hscroll").scrollLeft -
           that.px_to_int(that.target_gantt.style.left);
+        event.stopPropagation();  /*GS*/
       } else if (
         event.target.classList.contains("task_left") &&
         !b_project &&
@@ -2219,6 +2263,7 @@ gantt_row.animate(
           that.px_to_int(that.target_gantt.style.left);
         that.gantt_x = event.clientX;
         that.gantt_width = that.target_gantt.offsetWidth;
+        event.stopPropagation();  /*GS*/
       } else if (
         event.target.classList.contains("task_right") &&
         !b_project &&
@@ -2227,9 +2272,11 @@ gantt_row.animate(
         that.is_gantt_resize_right = true;
         that.mouse_x = event.clientX;
         that.gantt_width = that.target_gantt.offsetWidth;
+        event.stopPropagation();  /*GS*/
       } else if (event.target.classList.contains("gantt_task_progress_drag")) {
         that.is_gantt_progress = true;
         that.mouse_x = event.clientX - that.px_to_int(event.target.style.left);
+        //event.stopPropagation();  /*GS*/
       }
     }
   }
