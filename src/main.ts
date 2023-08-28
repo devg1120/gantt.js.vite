@@ -275,8 +275,8 @@ document.addEventListener("DOMContentLoaded", function () {
     //let count = parseInt(byId("sCount").value, 10);
 
     let from = new Date(date_str(today)).toISOString();
-    let to   = new Date(addday_str(today, 160)).toISOString();
-    let count = 100;
+    let to   = new Date(addday_str(today, 365)).toISOString();
+    let count = 600;
 
     //console.log(from);
     //console.log(to);

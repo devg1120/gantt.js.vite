@@ -811,6 +811,7 @@ function byId(id) {
                 gantt_grid_panel.appendChild(cell); //	add button
 
 */
+                                                                       // left
                 let cell = null;
 		//----------------------------------------------------
                 cell = document.createElement("div");
@@ -862,6 +863,80 @@ function byId(id) {
                 
                 cell.style.width = bw + "px";
                 gantt_grid_panel.appendChild(cell); //	add button
+
+
+
+                                                                       // right
+		//----------------------------------------------------
+                cell = document.createElement("div");
+                cell.classList.add("gantt_menu_text_button");
+                cell.style.float = "right";
+                cell.style.marginRight = "8px";
+                cell.addEventListener("click", function () {
+			//that.v_split();
+                        console.log("Yaer");
+                        that.config.min_column_width = 4;
+                        that.reset();
+                  });
+                
+                let cell_inner_text = document.createTextNode("Y");
+                cell.appendChild(cell_inner_text);
+                cell.style.width = bw + "px";
+                gantt_grid_panel.appendChild(cell); //	add button
+
+                cell = document.createElement("div");
+                cell.classList.add("gantt_menu_text_button");
+                cell.style.float = "right";
+                cell.style.marginRight = "8px";
+                cell.addEventListener("click", function () {
+			//that.v_split();
+                        console.log("Yaer");
+                        that.config.min_column_width = 15;
+                        that.reset();
+                  });
+                
+                cell_inner_text = document.createTextNode("Q");
+                cell.appendChild(cell_inner_text);
+                cell.style.width = bw + "px";
+                gantt_grid_panel.appendChild(cell); //	add button
+
+
+
+                cell = document.createElement("div");
+                cell.classList.add("gantt_menu_text_button");
+                cell.style.float = "right";
+                cell.style.marginRight = "8px";
+                cell.addEventListener("click", function () {
+			//that.v_split();
+                        console.log("Month");
+                        that.config.min_column_width = 40;
+                        that.reset();
+                  });
+                
+                cell_inner_text = document.createTextNode("M");
+                cell.appendChild(cell_inner_text);
+                cell.style.width = bw + "px";
+                gantt_grid_panel.appendChild(cell); //	add button
+
+                cell = document.createElement("div");
+                cell.classList.add("gantt_menu_text_button");
+                cell.style.float = "right";
+                cell.style.marginRight = "8px";
+                cell.addEventListener("click", function () {
+			//that.v_split();
+                        console.log("Week");
+                        that.config.min_column_width = 100;
+                        that.reset();
+                  });
+                
+                cell_inner_text = document.createTextNode("W");
+                cell.appendChild(cell_inner_text);
+                cell.style.width = bw + "px";
+                gantt_grid_panel.appendChild(cell); //	add button
+
+
+
+
 
 		//----------------------------------------------------
                 cell = document.createElement("div");
@@ -1636,7 +1711,7 @@ function byId(id) {
               "px"; // n_day * cell_width
 
             let gantt_scale_cell_text = document.createTextNode(
-              d_year.getFullYear(),
+              d_year.getFullYear() + '年' ,
             );
             gantt_scale_cell.appendChild(gantt_scale_cell_text);
             gantt_scale_line_year.appendChild(gantt_scale_cell);
@@ -1703,9 +1778,18 @@ function byId(id) {
               "px"; // n_day * cell_width
 
             //let gantt_scale_cell_text = document.createTextNode(format_month[d_temp.getMonth()] + ', ' + d_temp.getFullYear());
+
+            //let gantt_scale_cell_text = document.createTextNode(
+            //  d_month.getMonth() + 1 + "月 " + d_month.getFullYear(),
+            //);
             let gantt_scale_cell_text = document.createTextNode(
-              d_month.getMonth() + 1 + "월, " + d_month.getFullYear(),
+              d_month.getMonth() + 1 + "月 " ,
             );
+            if ( this.config.min_column_width > 5) {
+             gantt_scale_cell_text = document.createTextNode(
+              d_month.getFullYear() + "年 " + (d_month.getMonth() + 1) + "月 " ,
+            );
+            }
             gantt_scale_cell.appendChild(gantt_scale_cell_text);
             gantt_scale_line_month.appendChild(gantt_scale_cell);
 
@@ -1746,6 +1830,10 @@ function byId(id) {
             let gantt_scale_cell_text = document.createTextNode(
               d_day.getDate(),
             );
+            if ( this.config.min_column_width < 5) {
+                  gantt_scale_cell_text = document.createTextNode("");
+            }
+
             gantt_scale_cell.appendChild(gantt_scale_cell_text);
             gantt_scale_line_day.appendChild(gantt_scale_cell);
 
@@ -2145,10 +2233,11 @@ gantt_row.animate(
       }
     }
   }
+
   draw_right_list(index) {
     let that = this;
     let gantt_row = document.createElement("div");
-    //let gantt_row = document.createElement("input");
+    //let gantt_row = document.createElement("textarea");
     let b_main =
       this.tasks.data[this.visible_order[index].index].open != undefined;
     if (
@@ -2267,13 +2356,17 @@ gantt_row.animate(
     content.innerHTML = this.tasks.data[this.visible_order[index].index].text;
     gantt_row.appendChild(content);
 
-    /*
-    content = document.createElement("input");
-    content.classList.add("gantt_task_content");
-    content.style.color = "#000000";
-    content.value = this.tasks.data[this.visible_order[index].index].text;
-    gantt_row.appendChild(content);
-    */
+    /* MEMO Label*/
+    
+    //content = document.createElement("input");
+    let content_memo = document.createElement("textarea");
+    //content.classList.add("gantt_task_memo");
+    content_memo.classList.add("gantt_task_memo");
+    content_memo.style.color = "#000000";
+    content_memo.style.zIndex = "3000";
+    content_memo.value = "MEMO TEXT"
+    gantt_row.appendChild(content_memo);
+    
 
     if (!b_main) {
       task_left = document.createElement("div");
