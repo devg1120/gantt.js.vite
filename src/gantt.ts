@@ -705,6 +705,16 @@ export default class CubicGantt {
 
     gantt.config = this.config;
     gantt.init_gantt("gantt_here3");
+
+    let gantt_element = byId("gantt_here");
+
+    gantt_element.classList.add("left");
+    gantt_element.style.width = "50%";
+    //gantt_element.style.height = "250px";
+    gantt3_element.classList.add("right");
+    gantt3_element.style.width = "50%";
+    //gantt3_element.style.height = "250px";
+
   }
 
   reset() {

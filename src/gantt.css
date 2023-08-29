@@ -10,6 +10,14 @@ textarea {
 }
 */
 
+   .left{
+      float: left;
+    }
+    .right{
+      float: right;
+    }
+
+
 .gantt_grid_scale .gantt_grid_head_cell {
   color: #a6a6a6;
   border-top: none !important;
