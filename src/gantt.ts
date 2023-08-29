@@ -66,6 +66,7 @@ export default class CubicGantt {
     this.h_split_id = 0;
     this.v_split_gantt = [];
     this.h_split_gantt = [];
+    this.not_show_left_panel = false;
   }
   init_gantt(gantt_id) {
     if (document.getElementById("divRTMCContent")) {
@@ -562,14 +563,29 @@ export default class CubicGantt {
     this.draw_task(0, this.list_length);
 
     for (let i = 0; i < this.v_split_gantt.length; i++) {
-      this.v_split_gantt[i].task_visible_unsync();
+      this.v_split_gantt[i].v_task_visible_unsync();
+    }
+    for (let i = 0; i < this.h_split_gantt.length; i++) {
+      this.h_split_gantt[i].h_task_visible_unsync();
     }
   }
 
-  task_visible_unsync() {
+  v_task_visible_unsync() {
     this.sort_visible3();
 
     this.draw_task(0, this.list_length);
+    for (let i = 0; i < this.h_split_gantt.length; i++) {
+      this.h_split_gantt[i].h_task_visible_unsync();
+    }
+  }
+
+  h_task_visible_unsync() {
+    this.sort_visible3();
+
+    this.draw_task(0, this.list_length);
+    for (let i = 0; i < this.v_split_gantt.length; i++) {
+      this.v_split_gantt[i].v_task_visible_unsync();
+    }
   }
 
   push_v_split_gantt(gantt) {
@@ -577,8 +593,12 @@ export default class CubicGantt {
     this.v_split_id = 2;
   }
 
+  push_h_split_gantt(gantt) {
+    this.h_split_gantt.push(gantt);
+    this.h_split_id = 2;
+  }
   v_split() {
-    this.v_split_od = 1;
+    this.v_split_id = 1;
     function date_str(id) {
       var y = id.getFullYear().toString();
       var m = (id.getMonth() + 1).toString().padStart(2, "0");
@@ -644,6 +664,47 @@ export default class CubicGantt {
 
     gantt.config = this.config;
     gantt.init_gantt("gantt_here2");
+  }
+
+  h_split() {
+    this.h_split_id = 1;
+    function date_str(id) {
+      var y = id.getFullYear().toString();
+      var m = (id.getMonth() + 1).toString().padStart(2, "0");
+      var d = id.getDate().toString().padStart(2, "0");
+
+      var fed = y + "-" + m + "-" + d;
+      return fed;
+    }
+
+    function addday_str(day, a) {
+      const d2 = new Date(day.getTime());
+      d2.setDate(d2.getDate() + a);
+      return date_str(d2);
+    }
+
+    function addday(day, a) {
+      day.setDate(day.getDate() + a);
+    }
+
+    function byId(id) {
+      return document.getElementById(id);
+    }
+
+    let gantt = new CubicGantt();
+    gantt.not_show_left_panel = true;
+
+    this.h_split_gantt.push(gantt);
+    gantt.push_h_split_gantt(this);
+
+
+    gantt.tasks = {};
+    gantt.tasks = this.tasks;
+    let gantt3_element = byId("gantt_here3");
+    gantt3_element.style.height = "650px";
+
+    gantt.config = this.config;
+    gantt.init_gantt("gantt_here3");
   }
 
   reset() {
@@ -991,7 +1052,9 @@ export default class CubicGantt {
     cell.classList.add("gantt_menu_h_split");
     cell.style.float = "right";
     cell.style.marginRight = "5px";
-    cell.addEventListener("click", function () {});
+    cell.addEventListener("click", function () {
+      that.h_split();
+    });
 
     cell.style.width = bw + "px";
     gantt_grid_panel.appendChild(cell); //	add button
@@ -1910,7 +1973,14 @@ export default class CubicGantt {
 
     //	make left element
     for (let temp_idx = start_idx; temp_idx < end_idx; temp_idx++) {
+       if (!this.not_show_left_panel) {
       left_menu_vscroll.appendChild(this.draw_left_list(temp_idx)); // left pannel
+      } else {
+               //let ele = obj_gantt.querySelector(".gantt_layout_content");
+               //ele.style.width = "0px";
+               let ele2 = obj_gantt.querySelector(".grid_cell");
+               ele2.style.width = "0px";
+      }
       right_content_vscroll.appendChild(this.draw_right_list(temp_idx)); // right panel
     }
   }
