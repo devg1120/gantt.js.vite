@@ -166,8 +166,7 @@ use_add
 */
 
 function generateData3(count, from, to) {
-
-/*
+  /*
   let tasks = {
    data : [
       {n_id: 'P.0', text: 'Project 0', parent: 0, level: 0,open: true, use_add:true, font_color: '#fff', bar_color: '#65c16f', progress_color: "#3c9445", start_date: new Date("2023-09-01") ,end_date: new Date("2023-09-30")},
@@ -178,81 +177,439 @@ function generateData3(count, from, to) {
   };
 */
 
-let c3 = "#4169E1";
+  let c3 = "#4169E1";
 
-let tasks = {
-data : [
-{n_id: 'P.0', text: 'Project 0',  level: 0,open: true, use_add:true, font_color: '#fff', bar_color: '#65c16f', progress_color: "#3c9445"},
-    {n_id: 'C.0', text: 'level 1 child', parent: 'P.0', level: 1, open: true, use_add:true},
-      {n_id: 'C.01', text: 'level 2 child', parent: 'C.0', level: 2, use_add:true, use_drag: true,use_resize : true,  bar_color : c3, start_date: new Date("2023-09-06") ,end_date: new Date("2023-09-10") },
-      {n_id: 'C.02', text: 'level 3 child', parent: 'C.0', level: 2, use_add:true, use_drag: true,use_resize : true,  bar_color : c3, start_date: new Date("2023-09-06") ,end_date: new Date("2023-09-10")},
+  let memo = {
+    text: "MEMO\nTEXT\nMULTI    OK",
+    top: "50px",
+    left: " 50px",
+    width: " 150px",
+    height: " 150px",
+  };
 
-    {n_id: 'C.1', text: 'level 1 child', parent: 'P.0', level: 1,  open : true,use_add:true},
-      {n_id: 'C.11', text: 'level 2 child', parent: 'C.1', level: 2, use_add:true, use_drag: true,use_resize : true, bar_color : c3, start_date: new Date("2023-09-03") ,end_date: new Date("2023-09-18"), d_start:"2023-09-06",d_end:"2023-09-10"},
-      {n_id: 'C.12', text: 'level 2 child', parent: 'C.1', level: 2, use_add:true, use_drag: true,use_resize : true,  bar_color : c3,start_date: new Date("2023-09-09") ,end_date: new Date("2023-09-20"), d_start:"2023-09-06",d_end:"2023-09-10"},
-      {n_id: 'C.13', text: 'level 2 child', parent: 'C.1', level: 2, open : true, use_add:true },
-      {n_id: 'C.131', text: 'level 3 child', parent: 'C.13', level: 3, use_add:true, use_drag: true,use_resize : true, bar_color : c3, start_date: new Date("2023-09-21") ,end_date: new Date("2023-10-05"), d_start:"2023-09-06",d_end:"2023-09-10"},
-      {n_id: 'C.132', text: 'level 3 child', parent: 'C.13', level: 3, use_add:true, use_drag: true,use_resize : true,  bar_color : c3,start_date: new Date("2023-09-30") ,end_date: new Date("2023-10-20"), d_start:"2023-09-06",d_end:"2023-09-10"},
+  let memo2 = {
+    text: "MEMO\nTEXT\nMULTI    OK",
+    top: "50px",
+    left: " 50px",
+    width: " 150px",
+    height: " 150px",
+  };
+  let tasks = {
+    data: [
+      {
+        n_id: "P.0",
+        text: "Project 0",
+        level: 0,
+        open: true,
+        use_add: true,
+        font_color: "#fff",
+        bar_color: "#65c16f",
+        progress_color: "#3c9445",
+        memo: memo,
+      },
+      {
+        n_id: "C.0",
+        text: "level 1 child",
+        parent: "P.0",
+        level: 1,
+        open: true,
+        use_add: true,
+      },
+      {
+        n_id: "C.01",
+        text: "level 2 child",
+        parent: "C.0",
+        level: 2,
+        use_add: true,
+        use_drag: true,
+        use_resize: true,
+        bar_color: c3,
+        start_date: new Date("2023-09-06"),
+        end_date: new Date("2023-09-10"),
+      },
+      {
+        n_id: "C.02",
+        text: "level 3 child",
+        parent: "C.0",
+        level: 2,
+        use_add: true,
+        use_drag: true,
+        use_resize: true,
+        bar_color: c3,
+        start_date: new Date("2023-09-06"),
+        end_date: new Date("2023-09-10"),
+      },
 
-{n_id: 'P.1', text: 'Project 1',  level: 0,open: true, use_add:true, font_color: '#fff', bar_color: '#65c16f', progress_color: "#3c9445"},
-    {n_id: 'C.2', text: 'level 1 child', parent: 'P.1', level: 1, open: true, use_add:true },
-      {n_id: 'C.21', text: 'level 2 child', parent: 'C.2', level: 2, use_add:true, use_drag: true,use_resize : true,  bar_color : c3,start_date: new Date("2023-09-06") ,end_date: new Date("2023-09-10"), d_start:"2023-09-06",d_end:"2023-09-10"},
-      {n_id: 'C.22', text: 'level 3 child', parent: 'C.2', level: 2, use_add:true, use_drag: true,use_resize : true,  bar_color : c3,start_date: new Date("2023-09-06") ,end_date: new Date("2023-09-10"), d_start:"2023-09-06",d_end:"2023-09-10"},
+      {
+        n_id: "C.1",
+        text: "level 1 child",
+        parent: "P.0",
+        level: 1,
+        open: true,
+        use_add: true,
+      },
+      {
+        n_id: "C.11",
+        text: "level 2 child",
+        parent: "C.1",
+        level: 2,
+        use_add: true,
+        use_drag: true,
+        use_resize: true,
+        bar_color: c3,
+        start_date: new Date("2023-09-03"),
+        end_date: new Date("2023-09-18"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
+      {
+        n_id: "C.12",
+        text: "level 2 child",
+        parent: "C.1",
+        level: 2,
+        use_add: true,
+        use_drag: true,
+        use_resize: true,
+        bar_color: c3,
+        start_date: new Date("2023-09-09"),
+        end_date: new Date("2023-09-20"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
+      {
+        n_id: "C.13",
+        text: "level 2 child",
+        parent: "C.1",
+        level: 2,
+        open: true,
+        use_add: true,
+      },
+      {
+        n_id: "C.131",
+        text: "level 3 child",
+        parent: "C.13",
+        level: 3,
+        use_add: true,
+        use_drag: true,
+        use_resize: true,
+        bar_color: c3,
+        start_date: new Date("2023-09-21"),
+        end_date: new Date("2023-10-05"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
+      {
+        n_id: "C.132",
+        text: "level 3 child",
+        parent: "C.13",
+        level: 3,
+        use_add: true,
+        use_drag: true,
+        use_resize: true,
+        bar_color: c3,
+        start_date: new Date("2023-09-30"),
+        end_date: new Date("2023-10-20"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
 
-    {n_id: 'C.3', text: 'level 1 child', parent: 'P.1', level: 1,  open : true,use_add:true  },
-      {n_id: 'C.31', text: 'level 2 child', parent: 'C.3', level: 2, use_add:true, use_drag: true,use_resize : true,  bar_color : c3,start_date: new Date("2023-09-03") ,end_date: new Date("2023-09-18"), d_start:"2023-09-06",d_end:"2023-09-10"},
-      {n_id: 'C.32', text: 'level 2 child', parent: 'C.3', level: 2, use_add:true, use_drag: true,use_resize : true,  bar_color : c3,start_date: new Date("2023-09-09") ,end_date: new Date("2023-09-20"), d_start:"2023-09-06",d_end:"2023-09-10"},
+      {
+        n_id: "P.1",
+        text: "Project 1",
+        level: 0,
+        open: true,
+        use_add: true,
+        font_color: "#fff",
+        bar_color: "#65c16f",
+        progress_color: "#3c9445",
+      },
+      {
+        n_id: "C.2",
+        text: "level 1 child",
+        parent: "P.1",
+        level: 1,
+        open: true,
+        use_add: true,
+      },
+      {
+        n_id: "C.21",
+        text: "level 2 child",
+        parent: "C.2",
+        level: 2,
+        use_add: true,
+        use_drag: true,
+        use_resize: true,
+        bar_color: c3,
+        start_date: new Date("2023-09-06"),
+        end_date: new Date("2023-09-10"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
+      {
+        n_id: "C.22",
+        text: "level 3 child",
+        parent: "C.2",
+        level: 2,
+        use_add: true,
+        use_drag: true,
+        use_resize: true,
+        bar_color: c3,
+        start_date: new Date("2023-09-06"),
+        end_date: new Date("2023-09-10"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
 
-      {n_id: 'P.2', text: 'Project 2',  level: 0,open: true, use_add:true, font_color: '#fff', bar_color: '#65c16f', progress_color: "#3c9445", start_date: new Date("2023-09-01") ,end_date: new Date("2023-09-30")},
-      {n_id: 'C.4', text: 'level 1 child', parent: 'P.2', level: 1, open: true, use_add:true,  start_date: new Date("2023-09-06") ,end_date: new Date("2023-09-10"), d_start:"2023-09-06",d_end:"2023-09-10"},
-      {n_id: 'C.41', text: 'level 2 child', parent: 'C.4', level: 2, use_add:true, use_drag: true,use_resize : true,  bar_color : c3,start_date: new Date("2023-09-06") ,end_date: new Date("2023-09-10"), d_start:"2023-09-06",d_end:"2023-09-10"},
-      {n_id: 'C.42', text: 'level 3 child', parent: 'C.4', level: 2, use_add:true, use_drag: true,use_resize : true,  bar_color : c3,start_date: new Date("2023-09-06") ,end_date: new Date("2023-09-10"), d_start:"2023-09-06",d_end:"2023-09-10"},
+      {
+        n_id: "C.3",
+        text: "level 1 child",
+        parent: "P.1",
+        level: 1,
+        open: true,
+        use_add: true,
+      },
+      {
+        n_id: "C.31",
+        text: "level 2 child",
+        parent: "C.3",
+        level: 2,
+        use_add: true,
+        use_drag: true,
+        use_resize: true,
+        bar_color: c3,
+        start_date: new Date("2023-09-03"),
+        end_date: new Date("2023-09-18"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
+      {
+        n_id: "C.32",
+        text: "level 2 child",
+        parent: "C.3",
+        level: 2,
+        use_add: true,
+        use_drag: true,
+        use_resize: true,
+        bar_color: c3,
+        start_date: new Date("2023-09-09"),
+        end_date: new Date("2023-09-20"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+        memo: memo2,
+      },
 
-      {n_id: 'C.5', text: 'level 1 child', parent: 'P.2', level: 1,  open : true,use_add:true,  start_date: new Date("2023-09-06") ,end_date: new Date("2023-09-10"), d_start:"2023-09-06",d_end:"2023-09-10"},
-      {n_id: 'C.51', text: 'level 2 child', parent: 'C.5', level: 2, use_add:true, use_drag: true,use_resize : true,  bar_color : c3,start_date: new Date("2023-09-03") ,end_date: new Date("2023-09-18"), d_start:"2023-09-06",d_end:"2023-09-10"},
-      {n_id: 'C.52', text: 'level 2 child', parent: 'C.5', level: 2, use_add:true, use_drag: true,use_resize : true,  bar_color : c3,start_date: new Date("2023-09-09") ,end_date: new Date("2023-09-20"), d_start:"2023-09-06",d_end:"2023-09-10"},
+      {
+        n_id: "P.2",
+        text: "Project 2",
+        level: 0,
+        open: true,
+        use_add: true,
+        font_color: "#fff",
+        bar_color: "#65c16f",
+        progress_color: "#3c9445",
+        start_date: new Date("2023-09-01"),
+        end_date: new Date("2023-09-30"),
+      },
+      {
+        n_id: "C.4",
+        text: "level 1 child",
+        parent: "P.2",
+        level: 1,
+        open: true,
+        use_add: true,
+        start_date: new Date("2023-09-06"),
+        end_date: new Date("2023-09-10"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
+      {
+        n_id: "C.41",
+        text: "level 2 child",
+        parent: "C.4",
+        level: 2,
+        use_add: true,
+        use_drag: true,
+        use_resize: true,
+        bar_color: c3,
+        start_date: new Date("2023-09-06"),
+        end_date: new Date("2023-09-10"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
+      {
+        n_id: "C.42",
+        text: "level 3 child",
+        parent: "C.4",
+        level: 2,
+        use_add: true,
+        use_drag: true,
+        use_resize: true,
+        bar_color: c3,
+        start_date: new Date("2023-09-06"),
+        end_date: new Date("2023-09-10"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
 
-      {n_id: 'P.3', text: 'Project 3',  level: 0,open: true, use_add:true, font_color: '#fff', bar_color: '#65c16f', progress_color: "#3c9445", start_date: new Date("2023-09-01") ,end_date: new Date("2023-09-30")},
-      {n_id: 'C.6', text: 'level 1 child', parent: 'P.3', level: 1, open: true, use_add:true,  start_date: new Date("2023-09-06") ,end_date: new Date("2023-09-10"), d_start:"2023-09-06",d_end:"2023-09-10"},
-      {n_id: 'C.61', text: 'level 2 child', parent: 'C.6', level: 2, use_add:true, use_drag: true,use_resize : true,  bar_color : c3,start_date: new Date("2023-09-06") ,end_date: new Date("2023-09-10"), d_start:"2023-09-06",d_end:"2023-09-10"},
-      {n_id: 'C.62', text: 'level 3 child', parent: 'C.6', level: 2, use_add:true, use_drag: true,use_resize : true,  bar_color : c3,start_date: new Date("2023-09-06") ,end_date: new Date("2023-09-10"), d_start:"2023-09-06",d_end:"2023-09-10"},
+      {
+        n_id: "C.5",
+        text: "level 1 child",
+        parent: "P.2",
+        level: 1,
+        open: true,
+        use_add: true,
+        start_date: new Date("2023-09-06"),
+        end_date: new Date("2023-09-10"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
+      {
+        n_id: "C.51",
+        text: "level 2 child",
+        parent: "C.5",
+        level: 2,
+        use_add: true,
+        use_drag: true,
+        use_resize: true,
+        bar_color: c3,
+        start_date: new Date("2023-09-03"),
+        end_date: new Date("2023-09-18"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
+      {
+        n_id: "C.52",
+        text: "level 2 child",
+        parent: "C.5",
+        level: 2,
+        use_add: true,
+        use_drag: true,
+        use_resize: true,
+        bar_color: c3,
+        start_date: new Date("2023-09-09"),
+        end_date: new Date("2023-09-20"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
 
-      {n_id: 'C.7', text: 'level 1 child', parent: 'P.3', level: 1,  open : true,use_add:true,  start_date: new Date("2023-09-06") ,end_date: new Date("2023-09-10"), d_start:"2023-09-06",d_end:"2023-09-10"},
-      {n_id: 'C.71', text: 'level 2 child', parent: 'C.7', level: 2, use_add:true, use_drag: true,use_resize : true,  bar_color : c3,start_date: new Date("2023-09-03") ,end_date: new Date("2023-09-18"), d_start:"2023-09-06",d_end:"2023-09-10"},
-      {n_id: 'C.72', text: 'level 2 child', parent: 'C.7', level: 2, use_add:true, use_drag: true,use_resize : true,  bar_color : c3,start_date: new Date("2023-09-09") ,end_date: new Date("2023-09-20"), d_start:"2023-09-06",d_end:"2023-09-10"},
+      {
+        n_id: "P.3",
+        text: "Project 3",
+        level: 0,
+        open: true,
+        use_add: true,
+        font_color: "#fff",
+        bar_color: "#65c16f",
+        progress_color: "#3c9445",
+        start_date: new Date("2023-09-01"),
+        end_date: new Date("2023-09-30"),
+      },
+      {
+        n_id: "C.6",
+        text: "level 1 child",
+        parent: "P.3",
+        level: 1,
+        open: true,
+        use_add: true,
+        start_date: new Date("2023-09-06"),
+        end_date: new Date("2023-09-10"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
+      {
+        n_id: "C.61",
+        text: "level 2 child",
+        parent: "C.6",
+        level: 2,
+        use_add: true,
+        use_drag: true,
+        use_resize: true,
+        bar_color: c3,
+        start_date: new Date("2023-09-06"),
+        end_date: new Date("2023-09-10"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
+      {
+        n_id: "C.62",
+        text: "level 3 child",
+        parent: "C.6",
+        level: 2,
+        use_add: true,
+        use_drag: true,
+        use_resize: true,
+        bar_color: c3,
+        start_date: new Date("2023-09-06"),
+        end_date: new Date("2023-09-10"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
 
-
-
-
-  ]
-
+      {
+        n_id: "C.7",
+        text: "level 1 child",
+        parent: "P.3",
+        level: 1,
+        open: true,
+        use_add: true,
+        start_date: new Date("2023-09-06"),
+        end_date: new Date("2023-09-10"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
+      {
+        n_id: "C.71",
+        text: "level 2 child",
+        parent: "C.7",
+        level: 2,
+        use_add: true,
+        use_drag: true,
+        use_resize: true,
+        bar_color: c3,
+        start_date: new Date("2023-09-03"),
+        end_date: new Date("2023-09-18"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
+      {
+        n_id: "C.72",
+        text: "level 2 child",
+        parent: "C.7",
+        level: 2,
+        use_add: true,
+        use_drag: true,
+        use_resize: true,
+        bar_color: c3,
+        start_date: new Date("2023-09-09"),
+        end_date: new Date("2023-09-20"),
+        d_start: "2023-09-06",
+        d_end: "2023-09-10",
+      },
+    ],
   };
 
   return tasks;
 }
 //let gantt = new CubicGantt();
 
+function date_str(id) {
+  var y = id.getFullYear().toString();
+  var m = (id.getMonth() + 1).toString().padStart(2, "0");
+  var d = id.getDate().toString().padStart(2, "0");
 
-function date_str (id) {
-
- var y = id.getFullYear().toString();
- var m = (id.getMonth()+1).toString().padStart(2, '0');
- var d = id.getDate().toString().padStart(2, '0');
-
- var fed = y + '-' + m + '-' + d;
- return fed;
+  var fed = y + "-" + m + "-" + d;
+  return fed;
 }
 
-function addday_str( day, a ) {
- const d2 = new Date(day.getTime())
- d2.setDate( d2.getDate() + a );
- return date_str(d2)
+function addday_str(day, a) {
+  const d2 = new Date(day.getTime());
+  d2.setDate(d2.getDate() + a);
+  return date_str(d2);
 }
 
-function addday( day, a ) {
- day.setDate( day.getDate() + a );
+function addday(day, a) {
+  day.setDate(day.getDate() + a);
 }
-
 
 let today = new Date();
 
@@ -275,18 +632,18 @@ document.addEventListener("DOMContentLoaded", function () {
     //let count = parseInt(byId("sCount").value, 10);
 
     let from = new Date(date_str(today)).toISOString();
-    let to   = new Date(addday_str(today, 365)).toISOString();
+    let to = new Date(addday_str(today, 365)).toISOString();
     let count = 600;
 
     //console.log(from);
     //console.log(to);
     let from_s = date_str(new Date(from));
-    let to_s   = date_str(new Date(to));
+    let to_s = date_str(new Date(to));
 
     //console.log(from_s);
     //console.log(to_s);
     byId("sToday").value = from_s;
-    byId("sEnd").value   = to_s;
+    byId("sEnd").value = to_s;
     byId("sCount").value = count.toString();
 
     //let gantt = new CubicGantt();
@@ -295,10 +652,7 @@ document.addEventListener("DOMContentLoaded", function () {
     //gantt.tasks = generateData3(count, from, to);
     gantt.tasks = generateData3(count, from, to);
 
-
-
     //console.dir(gantt.tasks);
-
 
     from = new Date(from);
     to = new Date(to);
@@ -309,7 +663,7 @@ document.addEventListener("DOMContentLoaded", function () {
     //gantt.config.use_add = false;
     gantt.config.left_type = [
       { title: "Name", width: "350", align: "left", content: "text" },
-      { title: "LV", width: "15", align: "left", content: "level" },                  /*GS*/
+      { title: "LV", width: "15", align: "left", content: "level" } /*GS*/,
       { title: "Start", width: "90", align: "center", content: "d_start" },
       { title: "End", width: "90", align: "center", content: "d_end" },
       { title: "Test", width: "80", align: "right", content: "test" },
@@ -374,21 +728,19 @@ document.addEventListener("DOMContentLoaded", function () {
   document
     .getElementById("gantt_here")
     .addEventListener("gantt_change", function (json) {
-      console.log("gantt_change",json.detail.task);
-      //gantt.reset_visible( byId("gantt_here"));   
+      console.log("gantt_change", json.detail.task);
+      //gantt.reset_visible( byId("gantt_here"));
     });
 
-  window
-    .addEventListener("resize", function (data) {
-      console.log("resize",data);
-      gantt.reset_visible( byId("gantt_here"));   
-    });
+  window.addEventListener("resize", function (data) {
+    console.log("resize", data);
+    //gantt.reset_visible(byId("gantt_here"));
+    gantt.reset();
+  });
 
   //document
   //  .getElementById("gantt_here")
   //  .scrollTo({top: 0, behavior: 'smooth'});
-   
+
   //ace.edit("editor");
-
-
 });

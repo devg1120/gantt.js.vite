@@ -11,11 +11,11 @@ export default class CubicGantt {
       start_date: new Date(2018, 0, 1),
       end_date: new Date(2019, 0, 1),
       gantt_padding: 2.5, //	gantt padding
-      use_gantt_progress: true, //	progress 
+      use_gantt_progress: true, //	progress
       subscale_height: 21,
       subscales: ["year", "month", "day"], //
       check_weekend: true, //
-      use_add: true, //	add button 
+      use_add: true, //	add button
       fn_load_info: null,
       fn_add_main: null,
       fn_add_sub: null,
@@ -23,7 +23,7 @@ export default class CubicGantt {
       fn_delete_sub: null,
       fn_scroll_horizon: null,
       fn_after_reset: null,
-      left_type: [], //	left 
+      left_type: [], //	left
     };
 
     this.visible_order = [];
@@ -32,7 +32,7 @@ export default class CubicGantt {
     this.max_level = -1;
     this.show_level = -1;
 
-    this.total_height = 0; //	
+    this.total_height = 0; //
     this.total_width = 0; //
     this.left_width = 0; //
     this.resize_left_width = null;
@@ -58,9 +58,14 @@ export default class CubicGantt {
     this.last_vscroll_position = 0;
     this.last_hscroll_position = 0;
 
-    this.gantt_left_edit = false;  /* GS */
+    this.gantt_left_edit = false; /* GS */
     this.gantt_code_editer = null;
     this.gantt_code = "ABCDEFGHI";
+
+    this.v_split_id = 0;
+    this.h_split_id = 0;
+    this.v_split_gantt = [];
+    this.h_split_gantt = [];
   }
   init_gantt(gantt_id) {
     if (document.getElementById("divRTMCContent")) {
@@ -127,14 +132,12 @@ export default class CubicGantt {
     Object.assign(el.style, styles);
   }
 
-
   sort_visible() {
     //	계층별로 나열되어있는 배열 => TREE 순서로 나열되어있는 배열로 변환, 거꾸로 됨
     let copy_data = JSON.parse(JSON.stringify(this.tasks.data)); //	참조없이 복사
     let copy_length = copy_data.length;
 
     this.visible_order = [];
-
 
     let t = 0;
 
@@ -230,55 +233,53 @@ export default class CubicGantt {
           open: copy_data[copy_idx].open,
           n_children: 0,
         });
+      }
     }
-   }
   }
 
   dump() {
     let that = this;
 
     var task = class {
-        constructor(data, copy_index) {
-            this._data = data;
-            this._copy_index = copy_index;
-            this._children = [];
-          
-            
-        }
-        get id() {
-            return this._data.n_id;
-        }
-        get data() {
-            return this._data;
-        }
-        get copy_idx() {
-            return this._copy_index;
-        }
-        get open() {
-            return this._data.open;
-        }
-        get open_animate() {
-            return this._data.open_animate;
-        }
-        get parent_id() {
-            return this._data.parent;
-        }
-        get parent() {
-            return this._parent;
-        }
-        set parent(p) {
-            this._parent = p;
-        }
-        get children() {
-            return this._children;
-        }
-        set children(c_array) {
-            this._children = c_array;
-        }
-        addchild(c) {
-            this._children.push(c);
-        }
-    }
+      constructor(data, copy_index) {
+        this._data = data;
+        this._copy_index = copy_index;
+        this._children = [];
+      }
+      get id() {
+        return this._data.n_id;
+      }
+      get data() {
+        return this._data;
+      }
+      get copy_idx() {
+        return this._copy_index;
+      }
+      get open() {
+        return this._data.open;
+      }
+      get open_animate() {
+        return this._data.open_animate;
+      }
+      get parent_id() {
+        return this._data.parent;
+      }
+      get parent() {
+        return this._parent;
+      }
+      set parent(p) {
+        this._parent = p;
+      }
+      get children() {
+        return this._children;
+      }
+      set children(c_array) {
+        this._children = c_array;
+      }
+      addchild(c) {
+        this._children.push(c);
+      }
+    };
 
     let copy_data = JSON.parse(JSON.stringify(this.tasks.data)); //	참조없이 복사
     let copy_length = copy_data.length;
@@ -291,59 +292,58 @@ export default class CubicGantt {
     let parent = null;
 
     for (let i = 0; i < copy_data.length; ++i) {
-          let data = copy_data[i];
-          let new_task = new task(data, i);
-          task_dict[data.n_id] = new_task;
-          if (data.level == 0) {
-               top_level.push(new_task);
-          }
-    }
-
-    for ( let key in task_dict) {
-      let child_task = task_dict[key];
-      if (child_task.parent_id != undefined ) {
-           let parent_task = task_dict[child_task.parent_id];
-           parent_task.addchild( child_task );
- 
+      let data = copy_data[i];
+      let new_task = new task(data, i);
+      task_dict[data.n_id] = new_task;
+      if (data.level == 0) {
+        top_level.push(new_task);
       }
-    };
-
-   //-------------------------------------------
-    function indent( level ) {
-       let str = "";
-       for (let i = 0 ; i<= level ; i++) {
-             str += "   ";
-       }
-       return str;
     }
 
-    function task_walk(task,  level) {
-        console.log("task_walk");
-        level = level + 1;
-	//console.log(task.data)
-	//let level_ = task.data.level;
-        //gantt_code += indent(level_);
-        let _code = indent(level);
-	_code += task.data.n_id;
-	_code +=  " ";
-	_code += task.data.text;
-	_code +=  "\n";
-        //console.log(gantt_code);
-       for (let i = 0; i < task.children.length; ++i) {
-         let code_nest = task_walk(task.children[i],   level);
-	 _code += code_nest;
-       }
-       return _code;
-   }
-   this.gantt_code = "";
+    for (let key in task_dict) {
+      let child_task = task_dict[key];
+      if (child_task.parent_id != undefined) {
+        let parent_task = task_dict[child_task.parent_id];
+        parent_task.addchild(child_task);
+      }
+    }
 
-   for (let i = 0; i < top_level.length; ++i) {
-       let task = top_level[i];
-       let _code = task_walk(task,   -1);
-       this.gantt_code += _code;
-    };
+    //-------------------------------------------
+    function indent(level) {
+      let str = "";
+      for (let i = 0; i <= level; i++) {
+        str += "   ";
+      }
+      return str;
+    }
 
-     //return "ABC\nDEF\nGHI\nJKL\n";
+    function task_walk(task, level) {
+      console.log("task_walk");
+      level = level + 1;
+      //console.log(task.data)
+      //let level_ = task.data.level;
+      //gantt_code += indent(level_);
+      let _code = indent(level);
+      _code += task.data.n_id;
+      _code += " ";
+      _code += task.data.text;
+      _code += "\n";
+      //console.log(gantt_code);
+      for (let i = 0; i < task.children.length; ++i) {
+        let code_nest = task_walk(task.children[i], level);
+        _code += code_nest;
+      }
+      return _code;
+    }
+    this.gantt_code = "";
+
+    for (let i = 0; i < top_level.length; ++i) {
+      let task = top_level[i];
+      let _code = task_walk(task, -1);
+      this.gantt_code += _code;
+    }
+
+    //return "ABC\nDEF\nGHI\nJKL\n";
     return this.gantt_code;
   }
 
@@ -351,62 +351,56 @@ export default class CubicGantt {
     let that = this;
 
     var task = class {
-        constructor(data, copy_index) {
-            this._data = data;
-            this._copy_index = copy_index;
-            this._children = [];
-          
-            
-        }
-        get id() {
-            return this._data.n_id;
-        }
-        get data() {
-            return this._data;
-        }
-        get copy_idx() {
-            return this._copy_index;
-        }
-        get open() {
-            return this._data.open;
-        }
-        get open_animate() {
-            return this._data.open_animate;
-        }
-        get parent_id() {
-            return this._data.parent;
-        }
-        get parent() {
-            return this._parent;
-        }
-        set parent(p) {
-            this._parent = p;
-        }
-        get children() {
-            return this._children;
-        }
-        set children(c_array) {
-            this._children = c_array;
-        }
-        addchild(c) {
-            this._children.push(c);
-        }
-    }
+      constructor(data, copy_index) {
+        this._data = data;
+        this._copy_index = copy_index;
+        this._children = [];
+      }
+      get id() {
+        return this._data.n_id;
+      }
+      get data() {
+        return this._data;
+      }
+      get copy_idx() {
+        return this._copy_index;
+      }
+      get open() {
+        return this._data.open;
+      }
+      get open_animate() {
+        return this._data.open_animate;
+      }
+      get parent_id() {
+        return this._data.parent;
+      }
+      get parent() {
+        return this._parent;
+      }
+      set parent(p) {
+        this._parent = p;
+      }
+      get children() {
+        return this._children;
+      }
+      set children(c_array) {
+        this._children = c_array;
+      }
+      addchild(c) {
+        this._children.push(c);
+      }
+    };
 
     for (let i = 0; i < this.tasks.data.length; ++i) {
-         if (this.tasks.data[i].start_date != undefined ) {
-             this.tasks.data[i].d_start = 
-                 format_date(this.tasks.data[i].start_date);
-         }
-         if (this.tasks.data[i].end_date != undefined ) {
-             this.tasks.data[i].d_end = 
-                 format_date(this.tasks.data[i].end_date);
-         }
-         if (this.tasks.data[i].open_animate == undefined ) {
-             this.tasks.data[i].open_animate = false; 
-         }
-
-
+      if (this.tasks.data[i].start_date != undefined) {
+        this.tasks.data[i].d_start = format_date(this.tasks.data[i].start_date);
+      }
+      if (this.tasks.data[i].end_date != undefined) {
+        this.tasks.data[i].d_end = format_date(this.tasks.data[i].end_date);
+      }
+      if (this.tasks.data[i].open_animate == undefined) {
+        this.tasks.data[i].open_animate = false;
+      }
     }
 
     let copy_data = JSON.parse(JSON.stringify(this.tasks.data)); //	참조없이 복사
@@ -420,139 +414,135 @@ export default class CubicGantt {
     let parent = null;
 
     for (let i = 0; i < copy_data.length; ++i) {
-          let data = copy_data[i];
-          let new_task = new task(data, i);
-          task_dict[data.n_id] = new_task;
-          if (data.level == 0) {
-               top_level.push(new_task);
-          }
+      let data = copy_data[i];
+      let new_task = new task(data, i);
+      task_dict[data.n_id] = new_task;
+      if (data.level == 0) {
+        top_level.push(new_task);
+      }
     }
 
-    for ( let key in task_dict) {
+    for (let key in task_dict) {
       let child_task = task_dict[key];
-      if (child_task.parent_id != undefined ) {
-           let parent_task = task_dict[child_task.parent_id];
-           parent_task.addchild( child_task );
- 
+      if (child_task.parent_id != undefined) {
+        let parent_task = task_dict[child_task.parent_id];
+        parent_task.addchild(child_task);
       }
-    };
+    }
 
-   //-------------------------------------------
-    function task_dfs_org(task , data ) {
-       for (let i = 0; i < task.children.length; ++i) {
-         let r = task_dfs(task.children[i] , data );
-         if (task.data.start_date > r[0]) {
-              //task.data.start_date = r[0];
-              data[task.copy_idx].start_date = new Date(r[0]);
-         }
-         if (task.data.end_date < r[1]) {
-              //task.data.end_date = r[1];
-              //data[task.idx].end_date = r[1];
-              data[task.copy_idx].end_date = new Date(r[1]);
-         }
-       }
-       if ( task.open == undefined ) {
-           return [ task.data.start_date, task.data.end_date];
-       } else {
-           return [ task.data.start_date, task.data.end_date];
-       }
-   } // end func
+    //-------------------------------------------
+    function task_dfs_org(task, data) {
+      for (let i = 0; i < task.children.length; ++i) {
+        let r = task_dfs(task.children[i], data);
+        if (task.data.start_date > r[0]) {
+          //task.data.start_date = r[0];
+          data[task.copy_idx].start_date = new Date(r[0]);
+        }
+        if (task.data.end_date < r[1]) {
+          //task.data.end_date = r[1];
+          //data[task.idx].end_date = r[1];
+          data[task.copy_idx].end_date = new Date(r[1]);
+        }
+      }
+      if (task.open == undefined) {
+        return [task.data.start_date, task.data.end_date];
+      } else {
+        return [task.data.start_date, task.data.end_date];
+      }
+    } // end func
 
-  function format_date(d) {
+    function format_date(d) {
       let month = "" + (d.getMonth() + 1);
-     let  day = "" + d.getDate();
-    let   year = d.getFullYear();
+      let day = "" + d.getDate();
+      let year = d.getFullYear();
 
-    if (month.length < 2) month = "0" + month;
-    if (day.length < 2) day = "0" + day;
+      if (month.length < 2) month = "0" + month;
+      if (day.length < 2) day = "0" + day;
 
-    return [year, month, day].join("-");
-  }
+      return [year, month, day].join("-");
+    }
 
-    function task_dfs(task , data , level) {
-       level = level+1;
-       //if (level > max) { max = level; }
-       if (level > that.max_level) { that.max_level = level; }
+    function task_dfs(task, data, level) {
+      level = level + 1;
+      //if (level > max) { max = level; }
+      if (level > that.max_level) {
+        that.max_level = level;
+      }
 
-       let min_start_date = null;
-       let max_end_date   = null;
+      let min_start_date = null;
+      let max_end_date = null;
 
-       for (let i = 0; i < task.children.length; ++i) {
-         let r = task_dfs(task.children[i] , data , level );
+      for (let i = 0; i < task.children.length; ++i) {
+        let r = task_dfs(task.children[i], data, level);
 
-         if ( min_start_date == null) {
-               min_start_date = new Date(r[0]);
-         } else {
-               if (min_start_date.getTime() > new Date(r[0]).getTime()) {
-                       min_start_date = new Date(r[0]);
-               }
-         }
-         if ( max_end_date == null) {
-               max_end_date = new Date(r[1]);
-         } else {
-               if (max_end_date.getTime() < new Date(r[1]).getTime()) {
-                       max_end_date = new Date(r[1]);
-               }
-         }
+        if (min_start_date == null) {
+          min_start_date = new Date(r[0]);
+        } else {
+          if (min_start_date.getTime() > new Date(r[0]).getTime()) {
+            min_start_date = new Date(r[0]);
+          }
+        }
+        if (max_end_date == null) {
+          max_end_date = new Date(r[1]);
+        } else {
+          if (max_end_date.getTime() < new Date(r[1]).getTime()) {
+            max_end_date = new Date(r[1]);
+          }
+        }
+      }
 
-       }
-
-       if ( min_start_date != null && max_end_date != null) {
+      if (min_start_date != null && max_end_date != null) {
         data[task.copy_idx].start_date = new Date(min_start_date);
         data[task.copy_idx].end_date = new Date(max_end_date);
         data[task.copy_idx].d_start = format_date(new Date(min_start_date));
-        data[task.copy_idx].d_end   = format_date(new Date(max_end_date));
+        data[task.copy_idx].d_end = format_date(new Date(max_end_date));
         task.data.start_date = min_start_date;
         task.data.end_date = max_end_date;
+      }
 
-       }
+      return [task.data.start_date, task.data.end_date];
+    } // end func
 
-       return [ task.data.start_date, task.data.end_date];
-
-   } // end func
-
-   for (let i = 0; i < top_level.length; ++i) {
-       let task = top_level[i];
-       let r = task_dfs(task , this.tasks.data , -1 );
-    };
-    if( this.show_level == -1) {
-        this.show_level = this.max_level;
+    for (let i = 0; i < top_level.length; ++i) {
+      let task = top_level[i];
+      let r = task_dfs(task, this.tasks.data, -1);
+    }
+    if (this.show_level == -1) {
+      this.show_level = this.max_level;
     }
 
     //console.log("max level:",  this.max_level);
-    //that.show_level = 3;    
-   //-------------------------------------------
-    function task_walk(task,  visible_order , level) {
-        level = level + 1;
-	//console.log("show_level:", that.show_level);
-	if (level > that.show_level) {
-		return;
-	}
-        visible_order.push({
-          n_id: task.id,
-          parent: 0,
-          index: task.copy_idx,
-          open: task.open,
-          n_children: 0,
-          open_animate: task.open_animate,
-        });
-       if (task.open == false ){
-          return;
-       }
-       for (let i = 0; i < task.children.length; ++i) {
-         task_walk(task.children[i],  visible_order , level);
-       }
-   }
+    //that.show_level = 3;
+    //-------------------------------------------
+    function task_walk(task, visible_order, level) {
+      level = level + 1;
+      //console.log("show_level:", that.show_level);
+      if (level > that.show_level) {
+        return;
+      }
+      visible_order.push({
+        n_id: task.id,
+        parent: 0,
+        index: task.copy_idx,
+        open: task.open,
+        n_children: 0,
+        open_animate: task.open_animate,
+      });
+      if (task.open == false) {
+        return;
+      }
+      for (let i = 0; i < task.children.length; ++i) {
+        task_walk(task.children[i], visible_order, level);
+      }
+    }
 
-   this.visible_order = [];
-   for (let i = 0; i < top_level.length; ++i) {
-       let task = top_level[i];
-       task_walk(task,  this.visible_order , -1);
-    };
+    this.visible_order = [];
+    for (let i = 0; i < top_level.length; ++i) {
+      let task = top_level[i];
+      task_walk(task, this.visible_order, -1);
+    }
 
-
-
-/*
+    /*
     copy_data.forEach(function(data){
       switch (data.level) {
          case 0:
@@ -564,45 +554,59 @@ export default class CubicGantt {
       }
     });
 */
-
-   }
+  }
 
   task_visible() {
     this.sort_visible3();
 
     this.draw_task(0, this.list_length);
-    //this.reset_visible(document.getElementById(this.gantt_id));
 
+    for (let i = 0; i < this.v_split_gantt.length; i++) {
+      this.v_split_gantt[i].task_visible_unsync();
+    }
+  }
+
+  task_visible_unsync() {
+    this.sort_visible3();
+
+    this.draw_task(0, this.list_length);
+  }
+
+  push_v_split_gantt(gantt) {
+    this.v_split_gantt.push(gantt);
+    this.v_split_id = 2;
   }
 
   v_split() {
+    this.v_split_od = 1;
+    function date_str(id) {
+      var y = id.getFullYear().toString();
+      var m = (id.getMonth() + 1).toString().padStart(2, "0");
+      var d = id.getDate().toString().padStart(2, "0");
 
-function date_str (id) {
+      var fed = y + "-" + m + "-" + d;
+      return fed;
+    }
 
- var y = id.getFullYear().toString();
- var m = (id.getMonth()+1).toString().padStart(2, '0');
- var d = id.getDate().toString().padStart(2, '0');
+    function addday_str(day, a) {
+      const d2 = new Date(day.getTime());
+      d2.setDate(d2.getDate() + a);
+      return date_str(d2);
+    }
 
- var fed = y + '-' + m + '-' + d;
- return fed;
-}
+    function addday(day, a) {
+      day.setDate(day.getDate() + a);
+    }
 
-function addday_str( day, a ) {
- const d2 = new Date(day.getTime())
- d2.setDate( d2.getDate() + a );
- return date_str(d2)
-}
-
-function addday( day, a ) {
- day.setDate( day.getDate() + a );
-}
-
-function byId(id) {
-  return document.getElementById(id);
-}
+    function byId(id) {
+      return document.getElementById(id);
+    }
 
     let gantt = new CubicGantt();
-/*
+    this.v_split_gantt.push(gantt);
+    gantt.push_v_split_gantt(this);
+
+    /*
     let today = new Date();
 
     let from = new Date(date_str(today)).toISOString();
@@ -640,14 +644,18 @@ function byId(id) {
 
     gantt.config = this.config;
     gantt.init_gantt("gantt_here2");
-
-
   }
 
   reset() {
     this.reset_visible(document.getElementById(this.gantt_id));
+    for (let i = 0; i < this.v_split_gantt.length; i++) {
+      this.v_split_gantt[i].reset_unsync();
+    }
   }
 
+  reset_unsync() {
+    this.reset_visible(document.getElementById(this.gantt_id));
+  }
   reset_visible(obj_gantt) {
     //this.sort_visible2();
     this.sort_visible3();
@@ -726,41 +734,41 @@ function byId(id) {
     // bug append
     this.draw_task(0, this.list_length);
 
+    //------------------------------------  right panel h scroll    /*GS*/
 
-//------------------------------------  task panel h scroll
+    //const slider = document.querySelector(".right_content_hscroll");
+    const slider = obj_gantt.querySelector(".right_content_hscroll");
+    //const sliders = document.querySelectorAll(".right_content_hscroll");
+    //console.log(sliders);
+    let isDown = false;
+    let startX;
+    let scrollLeft;
 
-const slider = document.querySelector('.right_content_hscroll');
-//console.log(slider);
-let isDown = false;
-let startX;
-let scrollLeft;
+    slider.addEventListener("mousedown", (e) => {
+      //console.log("gantt hor scroll/ mouse down ");
+      isDown = true;
+      slider.classList.add("active");
+      startX = e.pageX - slider.offsetLeft;
+      scrollLeft = slider.scrollLeft;
+    });
+    slider.addEventListener("mouseleave", () => {
+      isDown = false;
+      slider.classList.remove("active");
+    });
+    slider.addEventListener("mouseup", () => {
+      isDown = false;
+      slider.classList.remove("active");
+    });
+    slider.addEventListener("mousemove", (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - slider.offsetLeft;
+      const walk = (x - startX) * 3; //scroll-fast
+      slider.scrollLeft = scrollLeft - walk;
+      //console.log(walk);
+    });
 
-slider.addEventListener('mousedown', (e) => {
-  //console.log("gantt hor scroll/ mouse down ");
-  isDown = true;
-  slider.classList.add('active');
-  startX = e.pageX - slider.offsetLeft;
-  scrollLeft = slider.scrollLeft;
-});
-slider.addEventListener('mouseleave', () => {
-  isDown = false;
-  slider.classList.remove('active');
-});
-slider.addEventListener('mouseup', () => {
-  isDown = false;
-  slider.classList.remove('active');
-});
-slider.addEventListener('mousemove', (e) => {
-  if(!isDown) return;
-  e.preventDefault();
-  const x = e.pageX - slider.offsetLeft;
-  const walk = (x - startX) * 3; //scroll-fast
-  slider.scrollLeft = scrollLeft - walk;
-  //console.log(walk);
-});
-
-
-//-------------------------------------
+    //-------------------------------------
 
     if (this.config.fn_after_reset != null) {
       this.config.fn_after_reset({
@@ -823,17 +831,16 @@ slider.addEventListener('mousemove', (e) => {
     gantt_grid.style.height = "inherit";
     gantt_grid.style.width = "inherit";
 
-    let gantt_grid_panel = document.createElement("div");   /*GS*/
+    let gantt_grid_panel = document.createElement("div"); /*GS*/
     gantt_grid_panel.classList.add("gantt_grid_panel");
     gantt_grid_panel.style.width = "inherit";
     gantt_grid_panel.style.height = "22px";
     //gantt_grid_panel.style.innerHTML = "TEST";
-           // append contol button
-    
-	    
-                //	button element
-   	        let bw = 20; //but 
-/*
+    // append contol button
+
+    //	button element
+    let bw = 20; //but
+    /*
                 let cell = document.createElement("div");
                 cell.classList.add("gantt_grid_head_add");
                 cell.style.float = "left";
@@ -847,202 +854,189 @@ slider.addEventListener('mousemove', (e) => {
                 gantt_grid_panel.appendChild(cell); //	add button
 
 */
-                                                                       // left
-                let cell = null;
-		//----------------------------------------------------
-                cell = document.createElement("div");
-                cell.classList.add("gantt_menu_button");
-                cell.classList.add("gantt_menu_level_left");
-                cell.style.float = "left";
-                cell.style.marginLeft = "8px";
-                cell.addEventListener("click", function () {
-                        if (that.show_level == 0) { return;}
-			that.show_level = that.show_level -1 ;
-			that.reset();
-                  });
-                
-                cell.style.width = bw + "px";
-                gantt_grid_panel.appendChild(cell); //	add button
+    // left
+    let cell = null;
+    //----------------------------------------------------
+    cell = document.createElement("div");
+    cell.classList.add("gantt_menu_button");
+    cell.classList.add("gantt_menu_level_left");
+    cell.style.float = "left";
+    cell.style.marginLeft = "8px";
+    cell.addEventListener("click", function () {
+      if (that.show_level == 0) {
+        return;
+      }
+      that.show_level = that.show_level - 1;
+      that.reset();
+    });
 
-		//----------------------------------------------------
-                cell = document.createElement("div");
-                //cell.classList.add("gantt_menu_button");
-                //cell.classList.add("gantt_menu_level");
-		cell.innerHTML = that.show_level;
-		//cell.textContent = that.show_level;
+    cell.style.width = bw + "px";
+    gantt_grid_panel.appendChild(cell); //	add button
 
-                cell.style.float = "left";
-                cell.style.marginTop = "-20px";
-                cell.style.marginLeft = "5px";
-		cell.style.textAlign = "center";
-		cell.style.verticalAlign = "top";
+    //----------------------------------------------------
+    cell = document.createElement("div");
+    //cell.classList.add("gantt_menu_button");
+    //cell.classList.add("gantt_menu_level");
+    cell.innerHTML = that.show_level;
+    //cell.textContent = that.show_level;
 
-                
-                cell.style.width = bw + "px";
-                gantt_grid_panel.appendChild(cell); //	add button
+    cell.style.float = "left";
+    cell.style.marginTop = "-20px";
+    cell.style.marginLeft = "5px";
+    cell.style.textAlign = "center";
+    cell.style.verticalAlign = "top";
 
+    cell.style.width = bw + "px";
+    gantt_grid_panel.appendChild(cell); //	add button
 
+    //----------------------------------------------------
+    cell = document.createElement("div");
+    cell.classList.add("gantt_menu_button");
+    cell.classList.add("gantt_menu_level_right");
+    cell.style.float = "left";
+    cell.style.marginLeft = "5px";
+    cell.addEventListener("click", function () {
+      if (that.show_level == that.max_level) {
+        return;
+      }
+      that.show_level = that.show_level + 1;
+      that.reset();
+    });
 
+    cell.style.width = bw + "px";
+    gantt_grid_panel.appendChild(cell); //	add button
 
+    // right
+    //----------------------------------------------------
+    cell = document.createElement("div");
+    cell.classList.add("gantt_menu_text_button");
+    cell.style.float = "right";
+    cell.style.marginRight = "8px";
+    cell.addEventListener("click", function () {
+      //that.v_split();
+      console.log("Yaer");
+      that.config.min_column_width = 4;
+      that.reset();
+    });
 
-		//----------------------------------------------------
-                cell = document.createElement("div");
-                cell.classList.add("gantt_menu_button");
-                cell.classList.add("gantt_menu_level_right");
-                cell.style.float = "left";
-                cell.style.marginLeft = "5px";
-                cell.addEventListener("click", function () {
-                        if (that.show_level ==  that.max_level) { return;}
-			that.show_level = that.show_level +1 ;
-			that.reset();
-                  });
-                
-                cell.style.width = bw + "px";
-                gantt_grid_panel.appendChild(cell); //	add button
+    let cell_inner_text = document.createTextNode("Y");
+    cell.appendChild(cell_inner_text);
+    cell.style.width = bw + "px";
+    gantt_grid_panel.appendChild(cell); //	add button
 
+    cell = document.createElement("div");
+    cell.classList.add("gantt_menu_text_button");
+    cell.style.float = "right";
+    cell.style.marginRight = "8px";
+    cell.addEventListener("click", function () {
+      //that.v_split();
+      console.log("Yaer");
+      that.config.min_column_width = 15;
+      that.reset();
+    });
 
+    cell_inner_text = document.createTextNode("Q");
+    cell.appendChild(cell_inner_text);
+    cell.style.width = bw + "px";
+    gantt_grid_panel.appendChild(cell); //	add button
 
-                                                                       // right
-		//----------------------------------------------------
-                cell = document.createElement("div");
-                cell.classList.add("gantt_menu_text_button");
-                cell.style.float = "right";
-                cell.style.marginRight = "8px";
-                cell.addEventListener("click", function () {
-			//that.v_split();
-                        console.log("Yaer");
-                        that.config.min_column_width = 4;
-                        that.reset();
-                  });
-                
-                let cell_inner_text = document.createTextNode("Y");
-                cell.appendChild(cell_inner_text);
-                cell.style.width = bw + "px";
-                gantt_grid_panel.appendChild(cell); //	add button
+    cell = document.createElement("div");
+    cell.classList.add("gantt_menu_text_button");
+    cell.style.float = "right";
+    cell.style.marginRight = "8px";
+    cell.addEventListener("click", function () {
+      //that.v_split();
+      console.log("Month");
+      that.config.min_column_width = 40;
+      that.reset();
+    });
 
-                cell = document.createElement("div");
-                cell.classList.add("gantt_menu_text_button");
-                cell.style.float = "right";
-                cell.style.marginRight = "8px";
-                cell.addEventListener("click", function () {
-			//that.v_split();
-                        console.log("Yaer");
-                        that.config.min_column_width = 15;
-                        that.reset();
-                  });
-                
-                cell_inner_text = document.createTextNode("Q");
-                cell.appendChild(cell_inner_text);
-                cell.style.width = bw + "px";
-                gantt_grid_panel.appendChild(cell); //	add button
+    cell_inner_text = document.createTextNode("M");
+    cell.appendChild(cell_inner_text);
+    cell.style.width = bw + "px";
+    gantt_grid_panel.appendChild(cell); //	add button
 
+    cell = document.createElement("div");
+    cell.classList.add("gantt_menu_text_button");
+    cell.style.float = "right";
+    cell.style.marginRight = "8px";
+    cell.addEventListener("click", function () {
+      //that.v_split();
+      console.log("Week");
+      that.config.min_column_width = 100;
+      that.reset();
+    });
 
+    cell_inner_text = document.createTextNode("W");
+    cell.appendChild(cell_inner_text);
+    cell.style.width = bw + "px";
+    gantt_grid_panel.appendChild(cell); //	add button
 
-                cell = document.createElement("div");
-                cell.classList.add("gantt_menu_text_button");
-                cell.style.float = "right";
-                cell.style.marginRight = "8px";
-                cell.addEventListener("click", function () {
-			//that.v_split();
-                        console.log("Month");
-                        that.config.min_column_width = 40;
-                        that.reset();
-                  });
-                
-                cell_inner_text = document.createTextNode("M");
-                cell.appendChild(cell_inner_text);
-                cell.style.width = bw + "px";
-                gantt_grid_panel.appendChild(cell); //	add button
+    //----------------------------------------------------
+    cell = document.createElement("div");
+    cell.classList.add("gantt_menu_button");
+    cell.classList.add("gantt_menu_v_split");
+    cell.style.float = "right";
+    cell.style.marginRight = "8px";
+    cell.addEventListener("click", function () {
+      that.v_split();
+    });
 
-                cell = document.createElement("div");
-                cell.classList.add("gantt_menu_text_button");
-                cell.style.float = "right";
-                cell.style.marginRight = "8px";
-                cell.addEventListener("click", function () {
-			//that.v_split();
-                        console.log("Week");
-                        that.config.min_column_width = 100;
-                        that.reset();
-                  });
-                
-                cell_inner_text = document.createTextNode("W");
-                cell.appendChild(cell_inner_text);
-                cell.style.width = bw + "px";
-                gantt_grid_panel.appendChild(cell); //	add button
+    cell.style.width = bw + "px";
+    gantt_grid_panel.appendChild(cell); //	add button
 
+    //----------------------------------------------------
+    cell = document.createElement("div");
+    cell.classList.add("gantt_menu_button");
+    cell.classList.add("gantt_menu_h_split");
+    cell.style.float = "right";
+    cell.style.marginRight = "5px";
+    cell.addEventListener("click", function () {});
 
+    cell.style.width = bw + "px";
+    gantt_grid_panel.appendChild(cell); //	add button
 
+    //----------------------------------------------------
+    cell = document.createElement("div");
+    cell.classList.add("gantt_menu_button");
+    cell.classList.add("gantt_menu_edit");
+    cell.style.float = "right";
+    cell.style.marginRight = "5px";
+    cell.addEventListener("click", function () {
+      //console.log("edit button click");
+      if (that.gantt_left_edit) {
+        that.gantt_left_edit = false;
+      } else {
+        that.gantt_left_edit = true;
+      }
+      that.reset();
+    });
 
-
-		//----------------------------------------------------
-                cell = document.createElement("div");
-                cell.classList.add("gantt_menu_button");
-                cell.classList.add("gantt_menu_v_split");
-                cell.style.float = "right";
-                cell.style.marginRight = "8px";
-                cell.addEventListener("click", function () {
-			that.v_split();
-                  });
-                
-                cell.style.width = bw + "px";
-                gantt_grid_panel.appendChild(cell); //	add button
-
-		//----------------------------------------------------
-                cell = document.createElement("div");
-                cell.classList.add("gantt_menu_button");
-                cell.classList.add("gantt_menu_h_split");
-                cell.style.float = "right";
-                cell.style.marginRight = "5px";
-                cell.addEventListener("click", function () {
-                  });
-                
-                cell.style.width = bw + "px";
-                gantt_grid_panel.appendChild(cell); //	add button
-
-		//----------------------------------------------------
-                cell = document.createElement("div");
-                cell.classList.add("gantt_menu_button");
-                cell.classList.add("gantt_menu_edit");
-                cell.style.float = "right";
-                cell.style.marginRight = "5px";
-                cell.addEventListener("click", function () {
-			//console.log("edit button click");
-                           if (that.gantt_left_edit ) {
-                                  that.gantt_left_edit = false;
-
-			   } else {
-                                  that.gantt_left_edit = true;
-
-			   }
-			   that.reset();
-                  });
-                
-                cell.style.width = bw + "px";
-                gantt_grid_panel.appendChild(cell); //	add button
-		//----------------------------------------------------
-                cell = document.createElement("div");
-                cell.classList.add("gantt_menu_button");
-                cell.classList.add("gantt_menu_code");
-                cell.style.float = "right";
-                cell.style.marginRight = "5px";
-                cell.addEventListener("click", function () {
-			let code = that.dump();
-   			if  (that.gantt_code_editor == null) {
-                                let obj_ = document.getElementById("gantt_face");
-                                let main_content = document.createElement("div");
-                                main_content.id = "editor";
-                                main_content.style.height = "300px";
-                                obj_.appendChild(main_content);
-                                 let session =  ace.createEditSession(code);
-   			         that.gantt_code_editor = ace.edit("editor");
-   			         that.gantt_code_editor.setSession(session);
-
-                        } else {
-   			         that.gantt_code_editor.container.remove();
-   			         that.gantt_code_editor.destroy() ;
-   			         that.gantt_code_editor = null;
-			}
-			   /*
+    cell.style.width = bw + "px";
+    gantt_grid_panel.appendChild(cell); //	add button
+    //----------------------------------------------------
+    cell = document.createElement("div");
+    cell.classList.add("gantt_menu_button");
+    cell.classList.add("gantt_menu_code");
+    cell.style.float = "right";
+    cell.style.marginRight = "5px";
+    cell.addEventListener("click", function () {
+      let code = that.dump();
+      if (that.gantt_code_editor == null) {
+        let obj_ = document.getElementById("gantt_face");
+        let main_content = document.createElement("div");
+        main_content.id = "editor";
+        main_content.style.height = "300px";
+        obj_.appendChild(main_content);
+        let session = ace.createEditSession(code);
+        that.gantt_code_editor = ace.edit("editor");
+        that.gantt_code_editor.setSession(session);
+      } else {
+        that.gantt_code_editor.container.remove();
+        that.gantt_code_editor.destroy();
+        that.gantt_code_editor = null;
+      }
+      /*
                            if (that.gant_left_edit ) {
                                   that.gant_left_edit = false;
    			          ace.edit("editor");
@@ -1054,11 +1048,10 @@ slider.addEventListener('mousemove', (e) => {
 			   }
 			   that.reset();
 			   */
-                  });
-                
-                cell.style.width = bw + "px";
-                gantt_grid_panel.appendChild(cell); //	add button
+    });
 
+    cell.style.width = bw + "px";
+    gantt_grid_panel.appendChild(cell); //	add button
 
     let gantt_grid_scale = document.createElement("div");
     gantt_grid_scale.classList.add("gantt_grid_scale");
@@ -1078,7 +1071,7 @@ slider.addEventListener('mousemove', (e) => {
     gantt_grid_data.appendChild(hidden_height);
 
     gantt_grid.appendChild(gantt_grid_scale);
-    gantt_grid_scale.appendChild(gantt_grid_panel);    /*GS*/
+    gantt_grid_scale.appendChild(gantt_grid_panel); /*GS*/
 
     gantt_grid.appendChild(gantt_grid_data);
     gantt_layout_content.appendChild(gantt_grid);
@@ -1104,7 +1097,7 @@ slider.addEventListener('mousemove', (e) => {
     div_resizer.appendChild(resizer_content);
     div_resizer.addEventListener("mousedown", function (e) {
       //e.preventDefault(); //  drag로 인한 highlight 해제시켜줌.
-      e.stopPropagation();  /*GS*/
+      e.stopPropagation(); /*GS*/
       let resizer_stick = document.createElement("div");
       resizer_stick.classList.add("gantt_resizer_stick");
       resizer_stick.style.height = that.total_height + "px";
@@ -1120,14 +1113,14 @@ slider.addEventListener('mousemove', (e) => {
       that.is_div_resize = true;
     });
     content_wrapper.addEventListener("mousemove", function (event) {
-      event.stopPropagation();  /*GS*/
+      event.stopPropagation(); /*GS*/
       if (that.is_div_resize) {
         div_resizer.querySelector(".gantt_resizer_stick").style.left =
           event.clientX - div_resizer.getBoundingClientRect().left + "px";
       }
     });
     content_wrapper.addEventListener("mouseup", function (event) {
-      event.stopPropagation();  /*GS*/
+      event.stopPropagation(); /*GS*/
       if (that.is_div_resize) {
         that.is_div_resize = false;
         that.resize_left_width =
@@ -1177,16 +1170,16 @@ slider.addEventListener('mousemove', (e) => {
 
     function onMouseUp(event) {
       //event.stopPropagation();  /*GS*/
-       function format_date(d) {
-           let month = "" + (d.getMonth() + 1);
-          let  day = "" + d.getDate();
-         let   year = d.getFullYear();
+      function format_date(d) {
+        let month = "" + (d.getMonth() + 1);
+        let day = "" + d.getDate();
+        let year = d.getFullYear();
 
-         if (month.length < 2) month = "0" + month;
-         if (day.length < 2) day = "0" + day;
+        if (month.length < 2) month = "0" + month;
+        if (day.length < 2) day = "0" + day;
 
-         return [year, month, day].join("-");
-       }
+        return [year, month, day].join("-");
+      }
 
       if (that.is_gantt_move) {
         let calc_left =
@@ -1225,9 +1218,12 @@ slider.addEventListener('mousemove', (e) => {
 
         // left d_start/d_end update
         that.tasks.data[that.visible_order[task_idx].index].d_start =
-             format_date(that.tasks.data[that.visible_order[task_idx].index].start_date);
-        that.tasks.data[that.visible_order[task_idx].index].d_end =
-             format_date(that.tasks.data[that.visible_order[task_idx].index].end_date);
+          format_date(
+            that.tasks.data[that.visible_order[task_idx].index].start_date,
+          );
+        that.tasks.data[that.visible_order[task_idx].index].d_end = format_date(
+          that.tasks.data[that.visible_order[task_idx].index].end_date,
+        );
 
         //	trigger gantt_change event
         obj_gantt.dispatchEvent(
@@ -1266,9 +1262,12 @@ slider.addEventListener('mousemove', (e) => {
 
         // left d_start/d_end update
         that.tasks.data[that.visible_order[task_idx].index].d_start =
-             format_date(that.tasks.data[that.visible_order[task_idx].index].start_date);
-        that.tasks.data[that.visible_order[task_idx].index].d_end =
-             format_date(that.tasks.data[that.visible_order[task_idx].index].end_date);
+          format_date(
+            that.tasks.data[that.visible_order[task_idx].index].start_date,
+          );
+        that.tasks.data[that.visible_order[task_idx].index].d_end = format_date(
+          that.tasks.data[that.visible_order[task_idx].index].end_date,
+        );
 
         //	trigger gantt_change event
         obj_gantt.dispatchEvent(
@@ -1301,9 +1300,12 @@ slider.addEventListener('mousemove', (e) => {
 
         // left d_start/d_end update
         that.tasks.data[that.visible_order[task_idx].index].d_start =
-             format_date(that.tasks.data[that.visible_order[task_idx].index].start_date);
-        that.tasks.data[that.visible_order[task_idx].index].d_end =
-             format_date(that.tasks.data[that.visible_order[task_idx].index].end_date);
+          format_date(
+            that.tasks.data[that.visible_order[task_idx].index].start_date,
+          );
+        that.tasks.data[that.visible_order[task_idx].index].d_end = format_date(
+          that.tasks.data[that.visible_order[task_idx].index].end_date,
+        );
 
         //	trigger gantt_change event
         obj_gantt.dispatchEvent(
@@ -1651,7 +1653,7 @@ slider.addEventListener('mousemove', (e) => {
       cell.setAttribute("data-column-name", "start_date");
       cell.style.width = el.width + "px";
       cell.style.textAlign = el.align || "center";
-/*
+      /*
       cell.animate({
       transform: [
         "translateX(0px) rotate(0deg)", // 開始値
@@ -1670,7 +1672,7 @@ slider.addEventListener('mousemove', (e) => {
       if (el.title == undefined) {
         format_str = "";
       } else {
-        format_str = el.title ;
+        format_str = el.title;
       }
       cell_inner_text = document.createTextNode(format_str);
       cell_inner.appendChild(cell_inner_text);
@@ -1698,7 +1700,6 @@ slider.addEventListener('mousemove', (e) => {
     cell.style.width = 50 + "px";
 
     obj_menu.appendChild(cell); //	add button
-
   }
   draw_date(obj_gantt) {
     //const format_month = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -1753,7 +1754,7 @@ slider.addEventListener('mousemove', (e) => {
               "px"; // n_day * cell_width
 
             let gantt_scale_cell_text = document.createTextNode(
-              d_year.getFullYear() + '年' ,
+              d_year.getFullYear() + "年",
             );
             gantt_scale_cell.appendChild(gantt_scale_cell_text);
             gantt_scale_line_year.appendChild(gantt_scale_cell);
@@ -1825,12 +1826,15 @@ slider.addEventListener('mousemove', (e) => {
             //  d_month.getMonth() + 1 + "月 " + d_month.getFullYear(),
             //);
             let gantt_scale_cell_text = document.createTextNode(
-              d_month.getMonth() + 1 + "月 " ,
+              d_month.getMonth() + 1 + "月 ",
             );
-            if ( this.config.min_column_width > 5) {
-             gantt_scale_cell_text = document.createTextNode(
-              d_month.getFullYear() + "年 " + (d_month.getMonth() + 1) + "月 " ,
-            );
+            if (this.config.min_column_width > 5) {
+              gantt_scale_cell_text = document.createTextNode(
+                d_month.getFullYear() +
+                  "年 " +
+                  (d_month.getMonth() + 1) +
+                  "月 ",
+              );
             }
             gantt_scale_cell.appendChild(gantt_scale_cell_text);
             gantt_scale_line_month.appendChild(gantt_scale_cell);
@@ -1872,8 +1876,8 @@ slider.addEventListener('mousemove', (e) => {
             let gantt_scale_cell_text = document.createTextNode(
               d_day.getDate(),
             );
-            if ( this.config.min_column_width < 5) {
-                  gantt_scale_cell_text = document.createTextNode("");
+            if (this.config.min_column_width < 5) {
+              gantt_scale_cell_text = document.createTextNode("");
             }
 
             gantt_scale_cell.appendChild(gantt_scale_cell_text);
@@ -1889,6 +1893,7 @@ slider.addEventListener('mousemove', (e) => {
     });
   }
   draw_task(start_idx, end_idx) {
+    console.log("draw_task");
     let obj_gantt = document.getElementById(this.gantt_id);
     let left_menu_vscroll = obj_gantt.querySelector(".left_menu_vscroll");
     let right_content_vscroll = obj_gantt
@@ -1905,8 +1910,8 @@ slider.addEventListener('mousemove', (e) => {
 
     //	make left element
     for (let temp_idx = start_idx; temp_idx < end_idx; temp_idx++) {
-      left_menu_vscroll.appendChild(this.draw_left_list(temp_idx));           // left pannel
-      right_content_vscroll.appendChild(this.draw_right_list(temp_idx));      // right panel
+      left_menu_vscroll.appendChild(this.draw_left_list(temp_idx)); // left pannel
+      right_content_vscroll.appendChild(this.draw_right_list(temp_idx)); // right panel
     }
   }
   draw_left_list(index) {
@@ -1925,9 +1930,11 @@ slider.addEventListener('mousemove', (e) => {
       this.tasks.data[this.visible_order[index].index].open != undefined;
     let b_open = this.tasks.data[this.visible_order[index].index].open || false;
     let gantt_row = document.createElement("div");
-    if (this.visible_order[index].show) {}
-    if (this.visible_order[index].hide) {}
-/*
+    if (this.visible_order[index].show) {
+    }
+    if (this.visible_order[index].hide) {
+    }
+    /*
 if (animate) {
     gantt_row.animate(
   [
@@ -1944,7 +1951,7 @@ if (animate) {
 }
 */
 
-/*
+    /*
 gantt_row.animate(
   [
     {
@@ -2013,7 +2020,8 @@ gantt_row.animate(
 
               gantt_cell_base.addEventListener("click", function () {
                 that.tasks.data[that.visible_order[index].index].open = false;
-                that.tasks.data[that.visible_order[index].index].open_animate = false;      // open animate
+                that.tasks.data[that.visible_order[index].index].open_animate =
+                  false; // open animate
                 that.reset_visible(document.getElementById(that.gantt_id));
               });
             } else {
@@ -2022,7 +2030,8 @@ gantt_row.animate(
 
               gantt_cell_base.addEventListener("click", function () {
                 that.tasks.data[that.visible_order[index].index].open = true;
-                that.tasks.data[that.visible_order[index].index].open_animate = true;      // open animate
+                that.tasks.data[that.visible_order[index].index].open_animate =
+                  true; // open animate
                 that.reset_visible(document.getElementById(that.gantt_id));
               });
             }
@@ -2055,7 +2064,7 @@ gantt_row.animate(
         if (arr_independent[n].title == undefined) {
           format_str = "";
         } else {
-          format_str =  arr_independent[n].title;
+          format_str = arr_independent[n].title;
         }
         //cell_inner_text = document.createTextNode(format_str);
         cell_inner_text = document.createElement("input");
@@ -2104,7 +2113,8 @@ gantt_row.animate(
 
               gantt_cell_base.addEventListener("click", function () {
                 that.tasks.data[that.visible_order[index].index].open = false;
-                that.tasks.data[that.visible_order[index].index].open_animate = false;      // open animate
+                that.tasks.data[that.visible_order[index].index].open_animate =
+                  false; // open animate
                 that.reset_visible(document.getElementById(that.gantt_id));
               });
             } else {
@@ -2113,7 +2123,8 @@ gantt_row.animate(
 
               gantt_cell_base.addEventListener("click", function () {
                 that.tasks.data[that.visible_order[index].index].open = true;
-                that.tasks.data[that.visible_order[index].index].open_animate = true;      // open animate
+                that.tasks.data[that.visible_order[index].index].open_animate =
+                  true; // open animate
                 that.reset_visible(document.getElementById(that.gantt_id));
               });
             }
@@ -2143,7 +2154,7 @@ gantt_row.animate(
 
         cell_inner = document.createElement("div");
         cell_inner.classList.add("gantt_tree_content");
-        
+
         if (
           this.tasks.data[this.visible_order[index].index][
             this.config.left_type[n].content
@@ -2151,24 +2162,24 @@ gantt_row.animate(
         ) {
           format_str = "";
         } else {
-          format_str =                                                   /* tree content */
-              this.tasks.data[this.visible_order[index].index][
+          format_str =
+            /* tree content */
+            this.tasks.data[this.visible_order[index].index][
               this.config.left_type[n].content
             ];
         }
-        if (this.gantt_left_edit) {   /* GS */
-             //cell_inner_text = document.createTextNode(format_str);
-             cell_inner_text = document.createElement("input");
-             cell_inner_text.value = format_str;
-             cell_inner.appendChild(cell_inner_text);
-             cell.appendChild(cell_inner);
-	} else {
-             cell_inner_text = document.createTextNode(format_str);
-             cell_inner.appendChild(cell_inner_text);
-             cell.appendChild(cell_inner);
-
-
-	}
+        if (this.gantt_left_edit) {
+          /* GS */
+          //cell_inner_text = document.createTextNode(format_str);
+          cell_inner_text = document.createElement("input");
+          cell_inner_text.value = format_str;
+          cell_inner.appendChild(cell_inner_text);
+          cell.appendChild(cell_inner);
+        } else {
+          cell_inner_text = document.createTextNode(format_str);
+          cell_inner.appendChild(cell_inner_text);
+          cell.appendChild(cell_inner);
+        }
 
         gantt_row.appendChild(cell);
       }
@@ -2249,7 +2260,7 @@ gantt_row.animate(
           range_left +
           obj_gantt.querySelector(".right_content_hscroll").scrollLeft -
           that.px_to_int(that.target_gantt.style.left);
-        event.stopPropagation();  /*GS*/
+        event.stopPropagation(); /*GS*/
       } else if (
         event.target.classList.contains("task_left") &&
         !b_project &&
@@ -2263,7 +2274,7 @@ gantt_row.animate(
           that.px_to_int(that.target_gantt.style.left);
         that.gantt_x = event.clientX;
         that.gantt_width = that.target_gantt.offsetWidth;
-        event.stopPropagation();  /*GS*/
+        event.stopPropagation(); /*GS*/
       } else if (
         event.target.classList.contains("task_right") &&
         !b_project &&
@@ -2272,7 +2283,7 @@ gantt_row.animate(
         that.is_gantt_resize_right = true;
         that.mouse_x = event.clientX;
         that.gantt_width = that.target_gantt.offsetWidth;
-        event.stopPropagation();  /*GS*/
+        event.stopPropagation(); /*GS*/
       } else if (event.target.classList.contains("gantt_task_progress_drag")) {
         that.is_gantt_progress = true;
         that.mouse_x = event.clientX - that.px_to_int(event.target.style.left);
@@ -2391,7 +2402,6 @@ gantt_row.animate(
       gantt_row.appendChild(darg);
     }
 
-    
     content = document.createElement("div");
     content.classList.add("gantt_task_content");
     if (
@@ -2404,16 +2414,122 @@ gantt_row.animate(
     gantt_row.appendChild(content);
 
     /* MEMO Label*/
-    
-    //content = document.createElement("input");
-    let content_memo = document.createElement("textarea");
-    //content.classList.add("gantt_task_memo");
-    content_memo.classList.add("gantt_task_memo");
-    content_memo.style.color = "#000000";
-    content_memo.style.zIndex = "3000";
-    content_memo.value = "MEMO TEXT"
-    gantt_row.appendChild(content_memo);
-    
+
+    if (this.tasks.data[this.visible_order[index].index].memo != undefined) {
+      let memo = this.tasks.data[this.visible_order[index].index].memo;
+      //content = document.createElement("input");
+      let memo_div = document.createElement("div");
+      //memo_div.setAttribute('draggable', 'true');
+
+      function callback(event) {
+        event.stopPropagation();
+      }
+      memo_div.addEventListener("click", callback);
+      memo_div.addEventListener("mousemove", callback);
+      memo_div.addEventListener("mousedown", callback);
+      memo_div.addEventListener("mouseup", callback);
+
+      //----------------------------------------------  memo drag
+
+      let content_memo = document.createElement("textarea");
+      //content.classList.add("gantt_task_memo");
+      content_memo.classList.add("gantt_task_memo");
+      content_memo.style.color = "#000000";
+      content_memo.style.zIndex = 3000;
+      content_memo.style.top = memo.top;
+      content_memo.style.left = memo.left;
+      content_memo.style.width = memo.width;
+      content_memo.style.height = memo.height;
+      //content_memo.value = "MEMO TEXT"
+      content_memo.value = memo["text"];
+      content_memo.addEventListener("change", (event) => {
+        console.log("memo change");
+        this.tasks.data[this.visible_order[index].index].memo = {
+          text: content_memo.value,
+          top: content_memo.style.top,
+          left: content_memo.style.left,
+          width: content_memo.style.width,
+          height: content_memo.style.height,
+        };
+      });
+
+      content_memo.addEventListener("resize", (event) => {
+        console.log("memo resize");
+      });
+
+      dragElement(content_memo);
+      let that = this;
+
+      function dragElement(elmnt) {
+        var pos1 = 0,
+          pos2 = 0,
+          pos3 = 0,
+          pos4 = 0;
+        elmnt.onmousedown = dragMouseDown;
+
+        function dragMouseDown(e) {
+          if (e.shiftKey) {
+            return;
+          }
+          //e = e || window.event;
+          //e.preventDefault();
+          // get the mouse cursor position at startup:
+          pos3 = e.clientX;
+          pos4 = e.clientY;
+          memo_div.onmouseup = closeDragElement;
+          // call a function whenever the cursor moves:
+          memo_div.onmousemove = elementDrag;
+        }
+
+        function elementDrag(e) {
+          if (e.shiftKey) {
+            return;
+          }
+          //e = e || window.event;
+          //e.preventDefault();
+          // calculate the new cursor position:
+          pos1 = pos3 - e.clientX;
+          pos2 = pos4 - e.clientY;
+          pos3 = e.clientX;
+          pos4 = e.clientY;
+          // set the element's new position:
+          elmnt.style.top = elmnt.offsetTop - pos2 + "px";
+          elmnt.style.left = elmnt.offsetLeft - pos1 + "px";
+
+          that.tasks.data[that.visible_order[index].index].memo = {
+            text: content_memo.value,
+            top: content_memo.style.top,
+            left: content_memo.style.left,
+            width: content_memo.style.width,
+            height: content_memo.style.height,
+          };
+        }
+
+        function closeDragElement() {
+          // stop moving when mouse button is released:
+          memo_div.onmouseup = null;
+          memo_div.onmousemove = null;
+        }
+      }
+      memo_div.appendChild(content_memo);
+      gantt_row.appendChild(memo_div);
+
+      const observer = new ResizeObserver((entries) => {
+        for (let entry of entries) {
+          console.log("resize");
+          that.tasks.data[that.visible_order[index].index].memo = {
+            text: content_memo.value,
+            top: content_memo.style.top,
+            left: content_memo.style.left,
+            width: content_memo.style.width,
+            height: content_memo.style.height,
+          };
+        }
+      });
+
+      //オブザーバーの observe() メソッドに監視対象の要素を指定して監視を開始
+      observer.observe(content_memo);
+    }
 
     if (!b_main) {
       task_left = document.createElement("div");
