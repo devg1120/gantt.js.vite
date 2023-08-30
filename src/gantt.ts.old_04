@@ -603,21 +603,13 @@ export default class CubicGantt {
       return document.getElementById(id);
     }
 
-    if (this.v_split_gantt.length == 2) {
-      console.log("no more v split");
-      return;
-    }
-
     let gantt = new CubicGantt();
     this.v_split_gantt.push(gantt);
     gantt.push_v_split_gantt(this);
 
-    let split_number = this.v_split_gantt.length;
-    let Id = "gantt_here_v_split_" + split_number.toString();
-
     gantt.tasks = {};
     gantt.tasks = this.tasks;
-    //let Id = "gantt_here2";
+    let Id = "gantt_here2";
     let add_gantt_element = byId(Id);
     if (add_gantt_element == null) {
       console.log(Id, "null");
@@ -628,7 +620,6 @@ export default class CubicGantt {
     }
     add_gantt_element.style.height = "350px";
 
-    if (split_number == 1) {
       //----------------------------------------------------
       let cell = document.createElement("div");
       cell.classList.add("gantt_close_button");
@@ -663,7 +654,6 @@ export default class CubicGantt {
       //console.log(add_gantt_element);
 
     //----------------------------------------------------
-
      console.log("v_split");
     //gantt.config = this.config;
 
@@ -675,61 +665,6 @@ export default class CubicGantt {
 
     gantt.init_gantt(Id);
     add_gantt_element.appendChild(cell); //	add button
-
-    } else if (split_number == 2) {
-
-      //----------------------------------------------------
-      let cell = document.createElement("div");
-      cell.classList.add("gantt_close_button");
-      cell.addEventListener("click", function () {
-        console.log("close button");
-        console.log(that.v_split_gantt);
-        for (let i = 0; i < that.v_split_gantt.length; i++) {
-          console.log("---close ");
-          that.v_split_gantt[i].v_split_remove(that);
-        }
-
-        //that.h_split_gantt = [];
-        for (let i = 0; i < that.v_split_gantt.length; i++) {
-           if (that.v_split_gantt[i] === gantt) {
-             console.log("ok2");
-             that.v_split_gantt.splice(i, 1);
-           }
-        }
-
-        add_gantt_element.remove();
-      });
-
-      cell.style.top = "2px";
-      cell.style.right = "0px";
-      //cell.style.position =  "relative";
-      cell.style.position = "absolute";
-      cell.style.width = "20px";
-      cell.style.height = "20px";
-      add_gantt_element.style.position = "relative";
-      //add_gantt_element.appendChild(cell); //	add button
-      //console.log(cell);
-      //console.log(add_gantt_element);
-
-    //----------------------------------------------------
-
-     console.log("v_split");
-    //gantt.config = this.config;
-
-    let clone_config = {};
-    for (let key in this.config) {
-      clone_config[key] = this.config[key];
-    }
-    gantt.config = clone_config;
-
-    gantt.init_gantt(Id);
-    add_gantt_element.appendChild(cell); //	add button
-
-
-
-
-
-    }
   }
 
   h_split_org() {
