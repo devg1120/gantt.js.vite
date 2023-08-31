@@ -619,7 +619,7 @@ let today = new Date();
 //console.log(addday_str(today, -1));
 //console.log(addday_str(today, 20));
 
-let gantt = new CubicGantt();
+let gantt = new CubicGantt("main");
 
 document.addEventListener("DOMContentLoaded", function () {
   let event = new Event("click");

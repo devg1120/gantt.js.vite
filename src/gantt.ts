@@ -3,7 +3,8 @@ export default class CubicGantt {
    *		tasks.data -> 상위노드 parent 값은 무조건 0
    *		main - sub 구조시 main 순서대로 정렬되어야 빠름.
    */
-  constructor() {
+  constructor(name) {
+    this.name = name;
     this.gantt_id = "";
     this.config = {
       min_column_width: 40, //
@@ -25,6 +26,8 @@ export default class CubicGantt {
       fn_after_reset: null,
       left_type: [], //	left
     };
+
+    console.log(this.name);
 
     this.visible_order = [];
 
@@ -608,7 +611,8 @@ export default class CubicGantt {
       return;
     }
 
-    let gantt = new CubicGantt();
+    let split_no = (this.v_split_gantt.length + 1).toString();
+    let gantt = new CubicGantt("v_split_" + split_no);
     this.v_split_gantt.push(gantt);
     gantt.push_v_split_gantt(this);
 
@@ -633,17 +637,13 @@ export default class CubicGantt {
       let cell = document.createElement("div");
       cell.classList.add("gantt_close_button");
       cell.addEventListener("click", function () {
-        console.log("close button");
-        console.log(that.v_split_gantt);
         for (let i = 0; i < that.v_split_gantt.length; i++) {
-          console.log("---close ");
           that.v_split_gantt[i].v_split_remove(that);
         }
 
         //that.h_split_gantt = [];
         for (let i = 0; i < that.v_split_gantt.length; i++) {
            if (that.v_split_gantt[i] === gantt) {
-             console.log("ok2");
              that.v_split_gantt.splice(i, 1);
            }
         }
@@ -664,7 +664,6 @@ export default class CubicGantt {
 
     //----------------------------------------------------
 
-     console.log("v_split");
     //gantt.config = this.config;
 
     let clone_config = {};
@@ -682,17 +681,13 @@ export default class CubicGantt {
       let cell = document.createElement("div");
       cell.classList.add("gantt_close_button");
       cell.addEventListener("click", function () {
-        console.log("close button");
-        console.log(that.v_split_gantt);
         for (let i = 0; i < that.v_split_gantt.length; i++) {
-          console.log("---close ");
           that.v_split_gantt[i].v_split_remove(that);
         }
 
         //that.h_split_gantt = [];
         for (let i = 0; i < that.v_split_gantt.length; i++) {
            if (that.v_split_gantt[i] === gantt) {
-             console.log("ok2");
              that.v_split_gantt.splice(i, 1);
            }
         }
@@ -713,7 +708,6 @@ export default class CubicGantt {
 
     //----------------------------------------------------
 
-     console.log("v_split");
     //gantt.config = this.config;
 
     let clone_config = {};
@@ -783,7 +777,8 @@ export default class CubicGantt {
       console.log("no more h split");
       return;
     }
-    let gantt = new CubicGantt();
+    let split_no = (this.h_split_gantt.length + 1).toString();
+    let gantt = new CubicGantt("h_split_" + split_no);
     gantt.not_show_left_panel = true;
 
     this.h_split_gantt.push(gantt);
@@ -811,30 +806,27 @@ export default class CubicGantt {
       let gantt_element = byId("gantt_here");
 
       gantt_element.classList.add("left");
-      gantt_element.style.width = "70%";
+      gantt_element.style.width = "60%";
       add_gantt_element.classList.add("left");
-      add_gantt_element.style.width = "30%";
-
+      add_gantt_element.style.width = "40%";
+      //this.task_visible();
       //----------------------------------------------------
       let cell = document.createElement("div");
       cell.classList.add("gantt_close_button");
       cell.addEventListener("click", function () {
-        console.log("close button");
-        console.log(that.h_split_gantt);
         for (let i = 0; i < that.h_split_gantt.length; i++) {
-          console.log("---close ");
           that.h_split_gantt[i].h_split_remove(that);
         }
 
         //that.h_split_gantt = [];
         for (let i = 0; i < that.h_split_gantt.length; i++) {
            if (that.h_split_gantt[i] === gantt) {
-             console.log("ok2");
              that.h_split_gantt.splice(i, 1);
            }
         }
 
         add_gantt_element.remove();
+        that.task_visible();  /*GS  bug fix*/
       });
 
       cell.style.top = "2px";
@@ -846,7 +838,6 @@ export default class CubicGantt {
       add_gantt_element.style.position = "relative";
       add_gantt_element.appendChild(cell); //	add button
     } else if (split_number == 2) {
-      console.log("split 2");
       let gantt_element = byId("gantt_here");
       let gantt_element2 = byId("gantt_here_h_split_1");
 
@@ -861,22 +852,19 @@ export default class CubicGantt {
       let cell = document.createElement("div");
       cell.classList.add("gantt_close_button");
       cell.addEventListener("click", function () {
-        console.log("close button");
-        console.log(that.h_split_gantt);
         for (let i = 0; i < that.h_split_gantt.length; i++) {
-          console.log("---close ");
           that.h_split_gantt[i].h_split_remove(that);
         }
 
         //that.h_split_gantt = [];
         for (let i = 0; i < that.h_split_gantt.length; i++) {
            if (that.h_split_gantt[i] === gantt) {
-             console.log("ok2");
              that.h_split_gantt.splice(i, 1);
            }
         }
 
         add_gantt_element.remove();
+        that.task_visible();  /*GS  bug fix*/
       });
 
       cell.style.top = "2px";
@@ -888,39 +876,28 @@ export default class CubicGantt {
       add_gantt_element.style.position = "relative";
       add_gantt_element.appendChild(cell); //	add button
     }
+    this.task_visible();  /*GS  bug fix*/
   }
 
   v_split_remove(element) {
-    console.log("v_split_remove");
-    console.log(this.v_split_gantt);
-    console.log(element);
 
     for (let i = 0; i < this.v_split_gantt.length; i++) {
       if (this.v_split_gantt[i] === element) {
-        console.log("ok");
         this.v_split_gantt.splice(i, 1);
       }
     }
-    console.log(this.v_split_gantt);
   }
 
   h_split_remove(element) {
-    console.log("h_split_remove");
-    console.log(this.h_split_gantt);
-    console.log(element);
 
     for (let i = 0; i < this.h_split_gantt.length; i++) {
       if (this.h_split_gantt[i] === element) {
-        console.log("ok");
         this.h_split_gantt.splice(i, 1);
       }
     }
-    console.log(this.h_split_gantt);
   }
 
   h_split_v_scroll_sync(value) {
-    console.log("h_split_v_scroll_sync");
-    console.log(this.obj_gantt);
     let gantt_data_area = this.obj_gantt.querySelector(".gantt_data_area");
     gantt_data_area.scrollTop = value;
     let gantt_grid_data = this.obj_gantt.querySelector(".gantt_grid_data");
@@ -1476,7 +1453,7 @@ export default class CubicGantt {
     let step = this.config.min_column_width;
 
     function onScroll_v(event) {
-      console.log("v scroll", gantt_data_area.scrollTop);
+      //console.log("v scroll", gantt_data_area.scrollTop);
       for (let i = 0; i < that.h_split_gantt.length; i++) {
         that.h_split_gantt[i].h_split_v_scroll_sync(gantt_data_area.scrollTop);
       }
