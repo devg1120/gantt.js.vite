@@ -559,6 +559,43 @@ export default class CubicGantt {
   }
 
   task_visible() {
+    console.log("task_visible", this.name);
+    this.sort_visible3();
+
+    this.draw_task(0, this.list_length);
+
+    for (let i = 0; i < this.v_split_gantt.length; i++) {
+      this.v_split_gantt[i].v_task_visible_unsync(this);
+    }
+    for (let i = 0; i < this.h_split_gantt.length; i++) {
+      this.h_split_gantt[i].h_task_visible_unsync(this);
+    }
+  }
+
+  v_task_visible_unsync(src_gantt) {
+    //console.log(" v_task_visible_unsync", this.name);
+    this.sort_visible3();
+
+    this.draw_task(0, this.list_length);
+
+    for (let i = 0; i < this.h_split_gantt.length; i++) {
+      this.h_split_gantt[i].h_task_visible_unsync();
+    }
+    for (let i = 0; i < this.v_split_gantt.length; i++) {
+      if (this.v_split_gantt[i]  != src_gantt) {
+          this.v_split_gantt[i].v_task_visible_unsync_endpoint();
+      }
+    }
+  }
+  v_task_visible_unsync_endpoint(src_gantt) {
+    this.sort_visible3();
+
+    this.draw_task(0, this.list_length);
+
+  }
+
+  h_task_visible_unsync(src_gantt) {
+    //console.log(" h_task_visible_unsync", this.name );
     this.sort_visible3();
 
     this.draw_task(0, this.list_length);
@@ -567,26 +604,17 @@ export default class CubicGantt {
       this.v_split_gantt[i].v_task_visible_unsync();
     }
     for (let i = 0; i < this.h_split_gantt.length; i++) {
-      this.h_split_gantt[i].h_task_visible_unsync();
+      if (this.h_split_gantt[i]  != src_gantt) {
+          this.h_split_gantt[i].h_task_visible_unsync_endpoint();
+      }
     }
   }
 
-  v_task_visible_unsync() {
+  h_task_visible_unsync_endpoint(src_gantt) {
     this.sort_visible3();
 
     this.draw_task(0, this.list_length);
-    for (let i = 0; i < this.h_split_gantt.length; i++) {
-      this.h_split_gantt[i].h_task_visible_unsync();
-    }
-  }
 
-  h_task_visible_unsync() {
-    this.sort_visible3();
-
-    this.draw_task(0, this.list_length);
-    for (let i = 0; i < this.v_split_gantt.length; i++) {
-      this.v_split_gantt[i].v_task_visible_unsync();
-    }
   }
 
   push_v_split_gantt(gantt) {
